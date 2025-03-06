@@ -1,0 +1,126 @@
+﻿@model Warehouse.MVC.Models.OrderVIew
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Danh sách đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Danh sách đơn hàng</h3>
+        </div>
+        <div class="card-body">
+            <!-- Thanh tìm kiếm -->
+            <div class="search-bar mb-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm theo mã đơn hàng, vận đơn, SĐT khách hàng...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i> Tìm kiếm (Ctrl + K)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bộ lọc -->
+            <div class="filter-bar d-flex flex-wrap gap-2 mb-3">
+                <select class="form-select" style="width: auto;">
+                    <option>Trạng thái giao hàng</option>
+                    <option>Tất cả</option>
+                    <option>Đang xử lý</option>
+                    <option>Đã giao</option>
+                    <option>Hủy</option>
+                </select>
+                <select class="form-select" style="width: auto;">
+                    <option>Trạng thái thanh toán</option>
+                    <option>Tất cả</option>
+                    <option>Đã thanh toán</option>
+                    <option>Chưa thanh toán</option>
+                </select>
+                <select class="form-select" style="width: auto;">
+                    <option>Ngày tạo</option>
+                    <option>Hôm nay</option>
+                    <option>7 ngày qua</option>
+                    <option>Tháng này</option>
+                </select>
+                <button class="btn btn-outline-primary">Bộ lọc khác</button>
+                <button class="btn btn-outline-success">Lưu bộ lọc</button>
+            </div>
+
+            <div class="d-flex justify-content-between mb-3">
+                <a asp-controller="Order" asp-action="Create" class="btn btn-primary">Tạo đơn hàng</a>
+                <button id="deleteSelectedBtn" class="btn btn-danger" style="display: none;" onclick="deleteSelectedOrders()">Xóa</button>
+            </div>
+
+            <form id="deleteForm" data-delete-url="@Url.Action("DeleteMultiple", "Order")">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll"></th>
+                            <th>Mã đơn hàng</th>
+                            <th>NCC</th>
+                            <th>Kiểu đơn</th>
+                            <th>Trạng thái đơn</th>
+                           
+                            <th>Ngày tạo</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                     <tbody>
+                      @foreach (var order in Model.OrderListDTO)
+                        {
+                            <tr>
+                                <td><input type="checkbox" name="selectedOrders" value="@order.OrderId" class="orderCheckbox"></td>
+                                <td>
+                                    <a asp-controller="Order" asp-action="Update" asp-route-id="@order.OrderId" class="order-link">
+                                       INV @order.OrderId
+                                    </a>
+                                <td>
+                                        @order.SupplierName
+                                </td>
+                                </td>
+                                <td>
+                                    @order.OrderType
+                                </td>
+                                <td>
+                                  @order.Status
+                                </td>
+                                
+                                <td>@order.OrderDate?.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <a asp-controller="OrderDetail" asp-action="Index" asp-route-id ="@order.OrderId" class="btn btn-primary">Chi tiết</a>
+                                </td>
+
+                            </tr>
+                        } 
+                    </tbody> 
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+@await Html.PartialAsync("_ToastPartial")
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/order-index.css" />
+}
+<style>
+    .order-link {
+        text-decoration: none;
+        color: inherit;
+        font-weight: 500;
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="~/js/order-index.js"></script>
+    <script>
+        $(document).ready(function () {
+            var deleteUrl = $('#deleteForm').data('delete-url');
+            window.deleteMultipleUrl = deleteUrl;
+        });
+    </script>
+}

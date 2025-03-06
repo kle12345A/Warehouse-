@@ -1,0 +1,55 @@
+﻿@model Warehouse.MVC.Models.SupplierView
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="container mt-5">
+        <h2>Thêm NCC</h2>
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <!-- Thông tin sản phẩm -->
+            <div class="card mb-4">
+                <div class="card-header">Thông NCC</div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card-body">
+
+                            <div class="mb-3">
+                                <label class="form-label">Tên sản phẩm *</label>
+                                <input type="text" class="form-control" name="name" placeholder="Tên danh mục" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone</label>
+                                <input type="text" class="form-control" name="phone" placeholder="Số điện thoại" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" placeholder="Email" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-body">
+
+                            <div class="mb-3">
+                                <label class="form-label">Địa chỉ</label>
+                                <input type="text" class="form-control" name="address" placeholder="Địa chỉ" required>
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+               
+            </div>
+
+
+            <!-- Nút hành động -->
+            <div class="d-flex justify-content-between">
+                <a asp-asp-controller="Supplier" asp-action="" type="button" class="btn btn-outline-secondary" >Hủy</a>
+                <button type="submit" class="btn btn-primary">Thêm danh mục</button>
+            </div>
+        </form>
+    </div>
+</div>

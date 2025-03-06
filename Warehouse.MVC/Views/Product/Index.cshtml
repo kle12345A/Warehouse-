@@ -1,0 +1,161 @@
+﻿@model Warehouse.MVC.Models.ProductView
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Danh sách sản phẩm</h3>
+        </div>
+        <div class="card-body">
+            <!-- Thanh tìm kiếm -->
+            <div class="search-bar">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm theo mã sản phẩm, tên sản phẩm, t...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i> Tìm kiếm (Ctrl + K)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bộ lọc -->
+            <div class="filter-bar">
+                <select class="form-select" style="width: auto;">
+                    <option>Kênh bán hàng</option>
+                    <option>Tất cả</option>
+                    <option>Kênh A</option>
+                    <option>Kênh B</option>
+                </select>
+                <select class="form-select" style="width: auto;">
+                    <option>Loại sản phẩm</option>
+                    <option>Tất cả</option>
+                    <option>Món khai vị</option>
+                    <option>Món chính</option>
+                </select>
+                <select class="form-select" style="width: auto;">
+                    <option>Tag</option>
+                    <option>Tất cả</option>
+                    <option>Hot</option>
+                    <option>New</option>
+                </select>
+                <button class="btn btn-outline-primary">Bộ lọc khác</button>
+                <button class="btn btn-outline-success">Lưu bộ lọc</button>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <a asp-controller="Product" asp-action="Create" class="btn btn-primary">Tạo mới sản phẩm</a>
+                <button id="deleteSelectedBtn" class="btn btn-danger" style="display: none;" onclick="deleteSelectedProducts()">Xóa</button>
+            </div>
+
+            <form id="deleteForm" method="post" asp-action="DeleteMultiple" asp-controller="Product">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll"></th>
+                            <th>Sản phẩm</th>
+                            <th>Số lượng sẵn có</th>
+                            <th>Loại</th>
+                            <th>Ngày khởi tạo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model.Products)
+                        {
+                            <tr>
+                                    <td><input type="checkbox" name="selectedProducts" value="@product.ProductId" class="productCheckbox"></td>
+                                <td>
+                                    <a asp-controller="Product" asp-action="Update" asp-route-id="@product.ProductId" class="product-link">
+                                        @if (!string.IsNullOrEmpty(product.Images))
+                                        {
+                                            <img src="@product.Images" alt="@product.Name" class="product-image">
+                                        }
+                                        else
+                                        {
+                                            <img src="https://via.placeholder.com/40" alt="No image" class="product-image">
+                                        }
+                                        @product.Name
+                                    </a>
+                                </td>
+                                <td>@product.AvailableQuantity</td>
+                                <td>@product.CategoryName</td>
+                                <td>@product.CreatedAt.ToString("dd/MM/yyyy")</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Toast thành công -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                @TempData["SuccessMessage"]
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast lỗi -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="errorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                @TempData["ErrorMessage"]
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/product-index.css" />
+}
+<style>
+    .product-link {
+        text-decoration: none;
+        color: inherit; /* Giữ màu chữ mặc định */
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Khoảng cách giữa ảnh và tên */
+    }
+
+    .product-image {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="~/js/product-index.js"></script>
+    <script>
+        $(document).ready(function () {
+            var deleteUrl = $('#deleteForm').data('delete-url');
+            window.deleteMultipleUrl = deleteUrl;
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            var successToast = document.getElementById('successToast');
+            if (successToast && successToast.querySelector('.toast-body').innerText.trim() !== '') {
+                var toast = new bootstrap.Toast(successToast, { delay: 3000 });
+                toast.show();
+            }
+
+            var errorToast = document.getElementById('errorToast');
+            if (errorToast && errorToast.querySelector('.toast-body').innerText.trim() !== '') {
+                var toast = new bootstrap.Toast(errorToast, { delay: 3000 });
+                toast.show();
+            }
+        });
+
+    </script>
+}

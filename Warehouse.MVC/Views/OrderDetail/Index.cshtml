@@ -1,0 +1,134 @@
+﻿@model Warehouse.MVC.Models.OrderDetailView
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    var totalProducts = Model.OrderDetailWithSupplier.OrderDetails.Sum(x => x.Quantity);
+    var totalPrice = Model.OrderDetailWithSupplier.OrderDetails.Sum(x => x.TotalPrice);
+}
+
+<div class="container-fluid">
+    <div class="container mt-5">
+        <h2>Chi tiết đơn hàng</h2>
+        <div class="d-flex justify-content-between mb-3">
+            <a asp-action="Create" asp-controller="Order" class="btn btn-primary">Tạo đơn khác</a>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Thông tin sản phẩm -->
+                <div class="card mb-4">
+                    <div class="card-header">Thông tin sản phẩm</div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                 @foreach (var item in Model.OrderDetailWithSupplier.OrderDetails)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(item.Image))
+                                                {
+                                                    <img src="@item.Image" alt="@item.ProductName" class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                }
+                                                else
+                                                {
+                                                    <img src="https://via.placeholder.com/40" alt="No image" class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                }
+                                                <div>
+                                                    <div class="fw-bold text-primary">@item.ProductName</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@item.Quantity</td>
+                                        <td>@String.Format("{0:N0} đ", item.UnitPrice)</td>
+                                        <td>@String.Format("{0:N0} đ", item.TotalPrice)</td>
+                                    </tr>
+                                }
+                            </tbody> 
+                        </table>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <strong>Thanh toán</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <span>Tổng tiền</span><br>
+                                <small class="text-muted">@totalProducts sản phẩm</small>
+                            </div>
+                            <div class="col-6 text-end">
+                                <span>@totalPrice.ToString("N0") đ</span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <span>Chiết khấu đơn</span><br>
+                                <small class="text-muted">------</small>
+                            </div>
+                            <div class="col-6 text-end">
+                                <span>0đ</span>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Tiền cần trả NCC</strong>
+                            </div>
+                            <div class="col-6 text-end">
+                                <strong>@totalPrice.ToString("N0") đ</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thông tin nhà cung cấp -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header">Thông tin nhà cung cấp</div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <label class="form-label">@Model.OrderDetailWithSupplier.SupplierName </label>
+                            <p></p>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">@Model.OrderDetailWithSupplier.SupplierPhone</label>
+                            <p></p>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">@Model.OrderDetailWithSupplier.SupplierEmail</label>
+                            <p></p>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">@Model.OrderDetailWithSupplier.SupplierAddress</label>
+                            <p></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+    <div style="margin-left: 10%;" class="d-flex ">
+        <a asp-controller="Order" asp-action="Index" type="button" class="btn btn-primary">Back</a>
+    </div>
+   
+</div>
+

@@ -1,0 +1,70 @@
+﻿@model Warehouse.MVC.Models.SupplierView
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Nhà cung cấp</h3>
+        </div>
+        <div class="card-body">
+            <!-- Thanh tìm kiếm -->
+            <div class="search-bar">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm theo tên danh mục...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i> Tìm kiếm (Ctrl + K)
+                    </button>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mb-3">
+                <a asp-controller="Supplier" asp-action="Create" class="btn btn-primary">Thêm NCC</a>
+                <button id="deleteSelectedBtn" class="btn btn-danger" style="display: none;" onclick="deleteSelectedCategories()">Xóa</button>
+            </div>
+
+            <form id="deleteForm" data-delete-url="@Url.Action("DeleteMultiple", "Category")">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Tên NCC</th>
+                            <th>Số điện thoại</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var supplier in Model.Suppliers)
+                        {
+                            <tr>
+                                
+                                <td>
+                                    <a style="text-decoration:none;" asp-controller="Supplier" asp-action="Update" asp-route-id="@supplier.SupplierId" class="product-link">
+                                        @supplier.Name
+                                    </a>
+                                </td>
+                                <td>@supplier.Phone</td>
+                                <td>@supplier.Email</td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+@await Html.PartialAsync("_ToastPartial")
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/category-index.css" />
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    
+}

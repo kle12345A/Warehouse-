@@ -1,0 +1,147 @@
+﻿@model Warehouse.MVC.Models.UserView
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Quản lý tài khoản</h3>
+        </div>
+        <div class="card-body">
+            <!-- Thanh tìm kiếm -->
+            <div class="search-bar">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm theo tên danh mục...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i> Tìm kiếm (Ctrl + K)
+                    </button>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                Thêm người dùng
+            </button>
+
+
+            <form id="deleteForm" data-delete-url="@Url.Action("DeleteMultiple", "Category")">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Tên đăng nhập</th>
+                            <th>Họ tên</th>
+                            <th>Số điện thoại</th>
+                            <th>Email</th>
+                            <th>Vai trò</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.UserDTOs)
+                        {
+                            <tr>
+
+                                <td>
+                                    
+                                        @user.Username
+                                
+                                </td>
+                                <td>@user.FullName</td>
+                                <td>@user.Phone</td>
+                                <td>@user.Email</td>
+                                <td>@user.Role</td>
+                                <td><a asp-controller="User" asp-action="Update" asp-route-id="@user.UserId" class="btn btn-primary">Cập nhật</a></td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createUserModalLabel">Thêm người dùng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Create" method="post">
+                    <!-- Thông tin tài khoản -->
+                    <div class="card mb-3">
+                        <div class="card-header">Thông tin tài khoản</div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Tên đăng nhập *</label>
+                                <input type="text" class="form-control" name="Username" placeholder="Nhập tên đăng nhập" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Mật khẩu *</label>
+                                <input type="password" class="form-control" name="Password" placeholder="Nhập mật khẩu" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin cá nhân -->
+                    <div class="card mb-3">
+                        <div class="card-header">Thông tin cá nhân</div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Họ và tên</label>
+                                <input type="text" class="form-control" name="FullName" placeholder="Nhập họ và tên">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Số điện thoại</label>
+                                <input type="text" class="form-control" name="Phone" placeholder="Nhập số điện thoại">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="Email" placeholder="Nhập email">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Địa chỉ</label>
+                                <textarea class="form-control" name="Address" rows="3" placeholder="Nhập địa chỉ"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vai trò -->
+                    <div class="card mb-3">
+                        <div class="card-header">Vai trò</div>
+                        <div class="card-body">
+                            <select class="form-select" name="Role" required>
+                                <option value="">Chọn vai trò</option>
+                                <option value="0">Chủ kho</option>
+                                <option value="1">Nhân viên</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Nút hành động -->
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Thêm người dùng</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("_ToastPartial")
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/category-index.css" />
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+}

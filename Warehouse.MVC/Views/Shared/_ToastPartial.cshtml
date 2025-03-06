@@ -1,0 +1,40 @@
+﻿<!-- Toast thành công -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="successToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                @TempData["SuccessMessage"]
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast lỗi -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="errorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                @TempData["ErrorMessage"]
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var successToast = document.getElementById('successToast');
+        if (successToast && successToast.querySelector('.toast-body').innerText.trim() !== '') {
+            var toast = new bootstrap.Toast(successToast, { delay: 3000 });
+            toast.show();
+        }
+
+        var errorToast = document.getElementById('errorToast');
+        if (errorToast && errorToast.querySelector('.toast-body').innerText.trim() !== '') {
+            var toast = new bootstrap.Toast(errorToast, { delay: 3000 });
+            toast.show();
+        }
+    });
+
+</script>

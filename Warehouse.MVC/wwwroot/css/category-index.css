@@ -1,0 +1,75 @@
+﻿.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #e9ecef;
+    padding: 15px 20px;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.search-bar {
+    margin-bottom: 20px;
+}
+
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+    .filter-bar .btn {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+.table {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+    .table thead th {
+        background-color: #f8f9fa;
+        color: #666;
+        font-weight: 500;
+        border-bottom: 2px solid #e9ecef;
+        padding: 12px;
+        white-space: nowrap;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f1f3f5;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+        padding: 12px;
+        color: #333;
+    }
+
+    .table img {
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        margin-right: 10px;
+    }
+
+.pagination {
+    margin-top: 20px;
+    justify-content: center;
+}

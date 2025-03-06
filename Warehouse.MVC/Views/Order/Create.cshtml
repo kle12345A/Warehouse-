@@ -1,0 +1,187 @@
+﻿@using Warehouse.MVC.Helpers
+@using WarehouseDTOs
+@model Warehouse.MVC.Models.OrderVIew
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Tạo đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="container mt-5">
+        <h3 class="card-title">Tạo đơn hàng mới</h3>
+
+        <form asp-action="Create" method="post">
+            <!-- Danh sách sản phẩm trong đơn hàng -->
+            <button style="margin-bottom:1%;" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+                Thêm sản phẩm
+            </button>
+            <div class="card mb-4">
+                <div class="card-header">Danh sách sản phẩm</div>
+                <div class="d-flex justify-content mb-3">
+                </div>
+
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Tên sản phẩm</th>
+                                <th>Ảnh</th>
+                                <th>Đơn giá</th>
+
+
+                                <th>Số lượng</th>
+                                <th>Thành tiền</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.CartItems ?? new List<CartItemDTO>())
+                            {
+                                <tr>
+                                    <td>@item.ProductName</td>
+                                    <td><img src="@item.ImageUrl" alt="Alternate Text" width="60" class="img-thumbnail" /></td>
+
+                                    <td>@item.Price.ToString("N0") đ</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@(item.Price * item.Quantity)đ</td>
+                                    <td>
+                                        <a asp-controller="Order" asp-action="RemoveFromCart" asp-route-id="@item.ProductId" class="btn btn-danger btn-sm">Xóa</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5" class="text-end"><strong>Tổng tiền:</strong></td>
+                                <td><strong>@(Model.CartItems?.Sum(x => x.Price * x.Quantity) ?? 0)đ</strong></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <!-- Thông tin đơn hàng -->
+            <div class="card mb-4">
+                <div class="card-header">Thông tin đơn hàng</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nhà cung cấp *</label>
+                        <select class="form-select" name="SupplierId" required>
+                            <option value="">-- Chọn nhà cung cấp --</option>
+                            @foreach (var supplier in Model.Suppliers)
+                            {
+                                <option value="@supplier.SupplierId">@supplier.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Kiểu đơn hàng *</label>
+                        <select class="form-select" name="OrderType" required>
+                            <option value="1">Nhập kho</option>
+                            <option value="2">Xuất kho</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="shippingSection" style="display: none;">
+                        <label class="form-label">Đơn vị vận chuyển *</label>
+                        <select class="form-select" name="CarrierId">
+                            <option value="">-- Chọn đơn vị vận chuyển --</option>
+                          @*   @foreach (var carrier in Model.Carriers ?? new List<CarrierDTO>())
+                            {
+                                <option value="@carrier.CarrierId">@carrier.Name</option>
+                            } *@
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ngày đặt hàng *</label>
+                        <input type="date" class="form-control" name="OrderDate" required>
+                    </div>
+                </div>
+            </div>
+
+            
+
+            <!-- Nút hành động -->
+            <div class="d-flex justify-content-between">
+                <a asp-controller="Order" asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+                <button type="submit" class="btn btn-success">Tạo đơn hàng</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal chọn sản phẩm -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Chọn sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm" asp-action="AddProductsToSession" asp-controller="Order" method="post">
+                    @Html.AntiForgeryToken()
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Chọn</th>
+                                <th>Hình ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in Model.Products)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" name="SelectedProducts" value="@product.ProductId" class="product-checkbox" data-quantity-name="SelectedProducts[@product.ProductId].Quantity">
+                                    </td>
+                                    <td>
+                                        <img src="@product.Images" alt="@product.Name" width="60" class="img-thumbnail">
+                                    </td>
+                                    <td>@product.Name</td>
+                                    <td>@product.Price.ToString("N0") đ</td>
+                                    <td>
+                                        <input type="number" name="SelectedProducts[@product.ProductId].Quantity" class="form-control product-quantity" min="1" value="1" required>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-success">Thêm vào đơn</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Tham chiếu các thư viện cần thiết -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Tham chiếu file JS riêng -->
+    <script src="~/js/create-order.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Ẩn/hiện ô Đơn vị vận chuyển dựa trên OrderType
+            $('select[name="OrderType"]').change(function () {
+                if ($(this).val() == "2") { // Xuất kho
+                    $('#shippingSection').show();
+                } else { // Nhập kho
+                    $('#shippingSection').hide();
+                }
+            });
+        });
+    </script>
+    </script>
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/order-index.css" />
+}

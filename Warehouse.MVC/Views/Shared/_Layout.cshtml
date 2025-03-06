@@ -1,0 +1,85 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Warehouse Admin Dashboard</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/site.css">
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <!-- Placeholder for logo -->
+        </div>
+        <nav>
+            <a asp-controller="Order" asp-action=""  class="nav-link"><i class="fas fa-shopping-cart"></i> <span>Đơn hàng</span></a>
+            <a  class="nav-link"><i class="fas fa-exchange-alt"></i> <span>Chuyển đổi</span></a>
+            
+            <!-- Thêm dropdown cho Sản phẩm -->
+                <a asp-controller="Product" asp-action="Index" class="nav-link dropdown-toggle" >
+                    <i class="fas fa-box"></i> <span>Sản phẩm</span>
+                </a>
+
+            <!-- Thêm dropdown cho Sản phẩm -->
+            <a asp-controller="Category" asp-action="Index" class="nav-link ">
+                <i class="fas fa-box"></i> <span>Danh mục sản phẩm</span>
+            </a>
+
+            <a href="/Admin/Inventory" class="nav-link"><i class="fas fa-warehouse"></i> <span>Quản lý kho</span></a>
+            <a asp-controller="Supplier" asp-action="Index" class="nav-link"><i class="fas fa-users"></i> <span>Nhà cung cấp</span></a>
+            <a asp-controller="User" asp-action="" class="nav-link"><i class="fas fa-database"></i> <span>Tài khoản</span></a>
+        </nav>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light" id="navbar">
+        <div class="container-fluid">
+            
+            <div class="ms-auto d-flex align-items-center">
+                <div class="dropdown me-3">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell"></i> <span class="badge bg-danger">9</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+                        <li><a class="dropdown-item" href="#">Thông báo 1</a></li>
+                        <li><a class="dropdown-item" href="#">Thông báo 2</a></li>
+                    </ul>
+                </div>
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Admin 09H
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="#">Hồ sơ</a></li>
+                        <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <div class="content" id="content">
+        <!-- Main content area -->
+        <main class="mt-4">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

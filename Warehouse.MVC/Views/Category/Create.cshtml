@@ -1,0 +1,34 @@
+﻿@model Warehouse.MVC.Models.CategoryView
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="container mt-5">
+        <h2>Thêm danh mục</h2>
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <!-- Thông tin sản phẩm -->
+            <div class="card mb-4">
+                <div class="card-header">Thông tin danh mục</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tên sản phẩm *</label>
+                        <input type="text" class="form-control" name="name" placeholder="Tên danh mục" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả</label>
+                        <textarea class="form-control" name="description" rows="5" placeholder="Nhập mô tả"></textarea>
+                    </div>
+                </div>
+            </div>
+
+           
+            <!-- Nút hành động -->
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='/Admin/Products'">Hủy</button>
+                <button type="submit" class="btn btn-primary">Thêm danh mục</button>
+            </div>
+        </form>
+    </div>
+</div>

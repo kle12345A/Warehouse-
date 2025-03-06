@@ -1,0 +1,69 @@
+﻿@model Warehouse.MVC.Models.UserView
+@{
+    ViewData["Title"] = "Create User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="container mt-5">
+        <h3 class="card-title">Thêm người dùng</h3>
+        <form asp-action="Create" method="post">
+            <!-- Thông tin tài khoản -->
+            <div class="card mb-4">
+                <div class="card-header">Thông tin tài khoản</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tên đăng nhập *</label>
+                        <input type="text" class="form-control" name="Username" placeholder="Nhập tên đăng nhập" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mật khẩu *</label>
+                        <input type="password" class="form-control" name="Password" placeholder="Nhập mật khẩu" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thông tin cá nhân -->
+            <div class="card mb-4">
+                <div class="card-header">Thông tin cá nhân</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Họ và tên</label>
+                        <input type="text" class="form-control" name="FullName" placeholder="Nhập họ và tên">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Số điện thoại</label>
+                        <input type="text" class="form-control" name="Phone" placeholder="Nhập số điện thoại">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="Email" placeholder="Nhập email">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Địa chỉ</label>
+                        <textarea class="form-control" name="Address" rows="3" placeholder="Nhập địa chỉ"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vai trò -->
+            <div class="card mb-4">
+                <div class="card-header">Vai trò</div>
+                <div class="card-body">
+                    <select class="form-select" name="Role" required>
+                        <option value="">Chọn vai trò</option>
+                        <option value="0">Chủ kho</option>
+                        <option value="1">Nhân viên</option>
+                       
+                    </select>
+                </div>
+            </div>
+
+            <!-- Nút hành động -->
+            <div class="d-flex justify-content-between">
+                <a asp-controller="User" asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+                <button type="submit" class="btn btn-primary">Thêm người dùng</button>
+            </div>
+        </form>
+    </div>
+</div>
