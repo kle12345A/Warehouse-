@@ -65,9 +65,20 @@
             <div class="card mb-4">
                 <div class="card-header">Thông tin đơn hàng</div>
                 <div class="card-body">
+                    <!-- Kiểu đơn hàng -->
                     <div class="mb-3">
+                        <label class="form-label">Kiểu đơn hàng *</label>
+                        <select class="form-select" name="OrderType" id="orderType" required>
+                            <option value="">-- Chọn kiểu đơn hàng --</option>
+                            <option value="1">Nhập kho</option>
+                            <option value="2">Xuất kho</option>
+                        </select>
+                    </div>
+
+                    <!-- Nhà cung cấp (hiển thị khi là đơn nhập kho) -->
+                    <div class="mb-3" id="supplierSection">
                         <label class="form-label">Nhà cung cấp *</label>
-                        <select class="form-select" name="SupplierId" required>
+                        <select class="form-select" name="SupplierId" id="supplierSelect">
                             <option value="">-- Chọn nhà cung cấp --</option>
                             @foreach (var supplier in Model.Suppliers)
                             {
@@ -76,23 +87,18 @@
                         </select>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Kiểu đơn hàng *</label>
-                        <select class="form-select" name="OrderType" required>
-                            <option value="1">Nhập kho</option>
-                            <option value="2">Xuất kho</option>
-                        </select>
-                    </div>
-                    <div class="mb-3" id="shippingSection" style="display: none;">
-                        <label class="form-label">Đơn vị vận chuyển *</label>
-                        <select class="form-select" name="CarrierId">
-                            <option value="">-- Chọn đơn vị vận chuyển --</option>
-                          @*   @foreach (var carrier in Model.Carriers ?? new List<CarrierDTO>())
+                    <!-- Khách hàng (hiển thị khi là đơn xuất kho) -->
+                    <div class="mb-3" id="customerSection" style="display: none;">
+                        <label class="form-label">Khách hàng *</label>
+                        <select class="form-select" name="CustomerId" id="customerSelect">
+                            <option value="">-- Chọn khách hàng --</option>
+                            @foreach (var customer in Model.CustomerDTOs    )
                             {
-                                <option value="@carrier.CarrierId">@carrier.Name</option>
-                            } *@
+                                <option value="@customer.CustomerId">@customer.FullName</option>
+                            } 
                         </select>
                     </div>
+                    
                     <div class="mb-3">
                         <label class="form-label">Ngày đặt hàng *</label>
                         <input type="date" class="form-control" name="OrderDate" required>
@@ -170,16 +176,38 @@
     <script src="~/js/create-order.js"></script>
     <script>
         $(document).ready(function () {
-            // Ẩn/hiện ô Đơn vị vận chuyển dựa trên OrderType
-            $('select[name="OrderType"]').change(function () {
-                if ($(this).val() == "2") { // Xuất kho
-                    $('#shippingSection').show();
-                } else { // Nhập kho
-                    $('#shippingSection').hide();
+            // Ẩn/hiện các ô dựa trên OrderType
+            function updateFormSections() {
+                var orderType = $('#orderType').val();
+                if (orderType == "1") { // Nhập kho
+                    $('#supplierSection').show();
+                    $('#supplierSelect').prop('required', true);
+                    $('#customerSection').hide();
+                    $('#customerSelect').prop('required', false);
+                  
+                } else if (orderType == "2") { // Xuất kho
+                    $('#supplierSection').hide();
+                    $('#supplierSelect').prop('required', false);
+                    $('#customerSection').show();
+                    $('#customerSelect').prop('required', true);
+                   
+                } else {
+                    $('#supplierSection').hide();
+                    $('#customerSection').hide();
+              
+                    $('#supplierSelect').prop('required', false);
+                    $('#customerSelect').prop('required', false);
                 }
+            }
+
+            // Gọi hàm khi load trang
+            updateFormSections();
+
+            // Gọi hàm khi thay đổi OrderType
+            $('#orderType').change(function () {
+                updateFormSections();
             });
         });
-    </script>
     </script>
 }
 @section Styles {

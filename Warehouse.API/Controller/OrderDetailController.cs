@@ -21,6 +21,12 @@ namespace Warehouse.API.Controller
             var orders = await _orderDetailService.GetAllAsync(id);
             return Ok(orders);
         }
+        [HttpGet("Details/{id}")]
+        public async Task<ActionResult<List<OrderDetailDTO>>> GetAllWiithCustomerOrders(int id)
+        {
+            var orders = await _orderDetailService.GetAllWithCustomerAsync(id);
+            return Ok(orders);
+        }
 
     }
 }

@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\js\update-order.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\css\product-index.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\js\update-order.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +25,10 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\uploads\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\js\update-order.js" />
   </ItemGroup>
 
 </Project>

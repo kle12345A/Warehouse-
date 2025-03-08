@@ -12,5 +12,7 @@ namespace BussinessLayer.Service.orderdetail
     public interface IOrderDetailService : IBaseService<OrderDetail>
     {
         Task<OrderDetailWithSupplierDTO> GetAllAsync(int id);
+        Task<OrderDetailWithCustomerDTO> GetAllWithCustomerAsync(int id);
+
     }
 }

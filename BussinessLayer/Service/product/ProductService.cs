@@ -11,18 +11,15 @@ namespace BussinessLayer.Service.product
     public class ProductService : BaseService<Product>, IProductService
     {
         private readonly IProductRepository _productRepository;
-        private readonly IBaseRepository<InventoryHistory> _inventoryHistoryRepository;
         private readonly IMapper _mapper;
 
         
 
         public ProductService(
             IProductRepository productRepository,
-            IBaseRepository<InventoryHistory> inventoryHistoryRepository,
             IMapper mapper) : base(productRepository)
         {
             _productRepository = productRepository;
-            _inventoryHistoryRepository = inventoryHistoryRepository;
             _mapper = mapper;
         }
 

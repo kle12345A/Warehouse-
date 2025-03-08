@@ -25,8 +25,17 @@ namespace DataAccessLayer.BaseRepository
         // Xóa bản ghi dựa trên đối tượng
         public async Task DeleteAsync(T entity)
         {
-            _dbSet.Remove(entity);
-            await SaveChangesAsync();
+            try
+            {
+                _context.Set<T>().Remove(entity);
+                await SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log ngoại lệ (sử dụng logger như Serilog hoặc Console)
+                Console.WriteLine($"Error in DeleteAsync: {ex.Message} - Inner Exception: {ex.InnerException?.Message}");
+                throw; // Ném lại ngoại lệ để xử lý ở tầng trên
+            }
         }
 
         // Xóa bản ghi dựa trên ID

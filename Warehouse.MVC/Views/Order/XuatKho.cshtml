@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Danh sách đơn hàng (Nhập kho)</h3>
+            <h3 class="card-title">Danh sách đơn hàng (Xuất kho)</h3>
         </div>
         <div class="card-body">
             <!-- Thanh tìm kiếm -->
@@ -57,7 +57,7 @@
                         <tr>
                             <th><input type="checkbox" id="selectAll"></th>
                             <th>Mã đơn hàng</th>
-                            <th>NCC</th>
+                            <th>Khách hàng</th>
                             <th>Kiểu đơn</th>
                             <th>Trạng thái đơn</th>
                             <th>Ngày tạo</th>
@@ -77,7 +77,7 @@
                                         </a>
                                     </td>
                                     <td>
-                                        @order.SupplierName
+                                        @order.Customer
                                     </td>
                                     <td>
                                         @order.OrderType
@@ -94,7 +94,7 @@
                                     </td>
                                     <td>@order.OrderDate?.ToString("dd/MM/yyyy HH:mm")</td>
                                     <td>
-                                        <a asp-controller="OrderDetail" asp-action="Index" asp-route-id="@order.OrderId" class="btn btn-primary">Chi tiết</a>
+                                        <a asp-controller="OrderDetail" asp-action="XuatKho" asp-route-id="@order.OrderId" class="btn btn-primary">Chi tiết</a>
                                     </td>
                                 </tr>
                             }
@@ -102,7 +102,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="7" class="text-center">Không có đơn hàng nhập kho nào.</td>
+                                <td colspan="7" class="text-center">Không có đơn hàng xuất kho nào.</td>
                             </tr>
                         }
                     </tbody>

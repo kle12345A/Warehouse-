@@ -17,7 +17,7 @@ public partial class WarehouseDbContext : DbContext
 
     public virtual DbSet<Category> Categories { get; set; }
 
-    public virtual DbSet<InventoryHistory> InventoryHistories { get; set; }
+    public virtual DbSet<Customer> Customers { get; set; }
 
     public virtual DbSet<Order> Orders { get; set; }
 
@@ -26,8 +26,6 @@ public partial class WarehouseDbContext : DbContext
     public virtual DbSet<Product> Products { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
-
-    public virtual DbSet<Shipping> Shippings { get; set; }
 
     public virtual DbSet<Supplier> Suppliers { get; set; }
 
@@ -51,32 +49,18 @@ public partial class WarehouseDbContext : DbContext
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
         });
 
-        modelBuilder.Entity<InventoryHistory>(entity =>
+        modelBuilder.Entity<Customer>(entity =>
         {
-            entity.HasKey(e => e.HistoryId).HasName("PK__Inventor__4D7B4ADD421988A9");
+            entity.HasKey(e => e.CustomerId).HasName("PK__Customer__A4AE64B8A72B087E");
 
-            entity.ToTable("InventoryHistory");
-
-            entity.Property(e => e.HistoryId).HasColumnName("HistoryID");
-            entity.Property(e => e.ChangeDate)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
+            entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.ProductId).HasColumnName("ProductID");
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.FullName).HasMaxLength(100);
+            entity.Property(e => e.Phone).HasMaxLength(20);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-            entity.Property(e => e.UserId).HasColumnName("UserID");
-
-            entity.HasOne(d => d.Product).WithMany(p => p.InventoryHistories)
-                .HasForeignKey(d => d.ProductId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_InventoryHistory_Products");
-
-            entity.HasOne(d => d.User).WithMany(p => p.InventoryHistories)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_InventoryHistory_Users");
         });
 
         modelBuilder.Entity<Order>(entity =>
@@ -87,17 +71,19 @@ public partial class WarehouseDbContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+            entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+            entity.Property(e => e.Note).HasColumnName("note");
             entity.Property(e => e.OrderDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.ShippingId).HasColumnName("ShippingID");
             entity.Property(e => e.SupplierId).HasColumnName("SupplierID");
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             entity.Property(e => e.UserId).HasColumnName("UserID");
 
-            entity.HasOne(d => d.Shipping).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.ShippingId)
-                .HasConstraintName("FK_Orders_Shipping");
+            entity.HasOne(d => d.Customer).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.CustomerId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_Orders_Customers");
 
             entity.HasOne(d => d.Supplier).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.SupplierId)
@@ -171,24 +157,6 @@ public partial class WarehouseDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.RoleName).HasMaxLength(50);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-        });
-
-        modelBuilder.Entity<Shipping>(entity =>
-        {
-            entity.HasKey(e => e.ShippingId).HasName("PK__Shipping__5FACD460635EE3E9");
-
-            entity.ToTable("Shipping");
-
-            entity.Property(e => e.ShippingId).HasColumnName("ShippingID");
-            entity.Property(e => e.Carrier).HasMaxLength(100);
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.EstimatedDeliveryDate).HasColumnType("datetime");
-            entity.Property(e => e.ShippingCost).HasColumnType("decimal(10, 2)");
-            entity.Property(e => e.ShippingDate).HasColumnType("datetime");
-            entity.Property(e => e.TrackingNumber).HasMaxLength(50);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
         });
 

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using BussinessLayer.Service.order;
 using DataAccessLayer.Models;
-using DataAcessLayer.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +23,10 @@ namespace BussinessLayer.Mapper
             // Order
             CreateMap<Order, OrderDTO>();
             CreateMap<OrderDTO, Order>();
+            CreateMap<Order, OrderDTO>();
+            CreateMap<OrderDetail, OrderDetailsDTO>();
+
+
 
             // Category
             CreateMap<Category, CategoryDTO>();
@@ -33,17 +36,7 @@ namespace BussinessLayer.Mapper
 
            
 
-            // InventoryHistory
-            CreateMap<InventoryHistory, InventoryHistoryDTO>();
-            CreateMap<InventoryHistoryDTO, InventoryHistory>();
-
-            // InventoryQuota
-            //CreateMap<InventoryQuota, InventoryQuotaDTO>();
-            //CreateMap<InventoryQuotaDTO, InventoryQuota>();
-
-            // Shipping
-            CreateMap<Shipping, ShippingDTO>();
-            CreateMap<ShippingDTO, Shipping>();
+           
 
             // Supplier
             CreateMap<Supplier, SupplierDTO>();
@@ -54,6 +47,13 @@ namespace BussinessLayer.Mapper
             // User
             CreateMap<User, UserDTO>();
             CreateMap<UserDTO, User>();
+
+
+
+            CreateMap<Customer, CustomerDTO>();
+            CreateMap<CustomerDTO, Customer>();
+            CreateMap<CustomerUpdateDTO, Customer>();
+            CreateMap<Customer, CustomerUpdateDTO>();
         }
     }
 }

@@ -14,4 +14,13 @@ namespace WarehouseDTOs
         public decimal Price { get; set; }
         public int Quantity { get; set; }
     }
+    public class UpdateCartItemDTO
+    {
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public string ImageUrl { get; set; }
+        public decimal Price { get; set; }
+        public int Quantity { get; set; }
+        public int OrderId { get; set; } // Để xác định sản phẩm thuộc đơn hàng nào
+    }
 }

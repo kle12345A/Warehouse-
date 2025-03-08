@@ -37,8 +37,6 @@ public partial class Product
 
     public virtual User CreatedByNavigation { get; set; } = null!;
 
-    public virtual ICollection<InventoryHistory> InventoryHistories { get; set; } = new List<InventoryHistory>();
-
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
     public virtual User? UpdatedByNavigation { get; set; }

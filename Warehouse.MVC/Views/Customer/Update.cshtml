@@ -1,0 +1,43 @@
+﻿@model Warehouse.MVC.Models.CustomerView
+@{
+    ViewData["Title"] = "Cập nhật khách hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="container mt-5">
+        <h2>Cập nhật khách hàng</h2>
+        <form asp-action="Update" method="post">
+            <!-- Thông tin khách hàng -->
+            <div class="card mb-4">
+                <div class="card-header">Thông tin khách hàng</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <input hidden type="text" class="form-control" name="customerId" value="@Model.Customer.CustomerId" placeholder="Tên khách hàng" required>
+
+                        <label class="form-label">Tên khách hàng *</label>
+                        <input type="text" class="form-control" name="fullName" value="@Model.Customer.FullName" placeholder="Tên khách hàng" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Số điện thoại *</label>
+                        <input type="text" class="form-control" name="phone" value="@Model.Customer.Phone" placeholder="Số điện thoại" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-control" name="email" value="@Model.Customer.Email" placeholder="Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Địa chỉ *</label>
+                        <input type="text" class="form-control" name="address" value="@Model.Customer.Address" placeholder="Địa chỉ" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nút hành động -->
+            <div class="d-flex justify-content-between">
+                <a asp-controller="Customer" asp-action="Index" type="button" class="btn btn-outline-secondary">Hủy</a>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+            </div>
+        </form>
+    </div>
+</div>

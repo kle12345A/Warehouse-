@@ -42,8 +42,8 @@ namespace DataAccessLayer.Repository.order
                     OrderId = o.OrderId,
                     SupplierName = o.Supplier.Name,
                     OrderType = (OrderTypeEnum?)o.OrderType,
+                    Customer =  o.Customer.FullName,
                     UserName = o.User.FullName,
-                    ShippingName = o.Shipping.Carrier,
                     OrderDate = o.OrderDate,
                     Status = (OrderStatus)o.Status,
                     
@@ -53,5 +53,16 @@ namespace DataAccessLayer.Repository.order
             return orders;
         }
 
+        public async Task<Order> GetByIdWithDetailsAsync(int id)
+        {
+            return await _context.Orders
+                .Include(o => o.OrderDetails)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+        }
+
+        public Task<bool> UpdateOrderStatusAsync(int orderId, OrderStatus newStatus)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

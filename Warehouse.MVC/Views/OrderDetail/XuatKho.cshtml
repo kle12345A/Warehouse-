@@ -5,8 +5,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @{
-    var totalProducts = Model.OrderDetailWithSupplier.OrderDetails.Sum(x => x.Quantity);
-    var totalPrice = Model.OrderDetailWithSupplier.OrderDetails.Sum(x => x.TotalPrice);
+    var totalProducts = Model.OrderDetailWithCustomer.OrderDetails.Sum(x => x.Quantity);
+    var totalPrice = Model.OrderDetailWithCustomer.OrderDetails.Sum(x => x.TotalPrice);
 }
 
 <div class="container-fluid">
@@ -31,7 +31,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                 @foreach (var item in Model.OrderDetailWithSupplier.OrderDetails)
+                                @foreach (var item in Model.OrderDetailWithCustomer.OrderDetails)
                                 {
                                     <tr>
                                         <td>
@@ -54,7 +54,7 @@
                                         <td>@String.Format("{0:N0} đ", item.TotalPrice)</td>
                                     </tr>
                                 }
-                            </tbody> 
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -100,22 +100,22 @@
             <!-- Thông tin nhà cung cấp -->
             <div class="col-md-4">
                 <div class="card mb-4">
-                    <div class="card-header">Thông tin nhà cung cấp</div>
+                    <div class="card-header">Thông tin khách hàng</div>
                     <div class="card-body">
                         <div class="mb-2">
-                            <label class="form-label">@Model.OrderDetailWithSupplier.SupplierName </label>
+                            <label class="form-label">@Model.OrderDetailWithCustomer.FullName </label>
                             <p></p>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label">@Model.OrderDetailWithSupplier.SupplierPhone</label>
+                            <label class="form-label">@Model.OrderDetailWithCustomer.Phone</label>
                             <p></p>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label">@Model.OrderDetailWithSupplier.SupplierEmail</label>
+                            <label class="form-label">@Model.OrderDetailWithCustomer.Email</label>
                             <p></p>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label">@Model.OrderDetailWithSupplier.SupplierAddress</label>
+                            <label class="form-label">@Model.OrderDetailWithCustomer.Address</label>
                             <p></p>
                         </div>
                     </div>
@@ -127,10 +127,10 @@
 
     </div>
     <div style="margin-left: 10%;" class="d-flex">
-        <a asp-controller="Order" asp-action="Index" type="button" class="btn btn-primary me-3">Back</a>
+        <a asp-controller="Order" asp-action="XuatKho" type="button" class="btn btn-primary me-3">Back</a>
 
 
-        @if (Model.OrderDetailWithSupplier.OrderStatus == WarehouseDTOs.OrderStatus.Pending)
+        @if (Model.OrderDetailWithCustomer.OrderStatus == WarehouseDTOs.OrderStatus.Pending)
         {
             <form id="approveForm" asp-action="ApproveOrder" asp-controller="OrderDetail" method="post">
                 @Html.AntiForgeryToken()
@@ -138,12 +138,12 @@
                 <button type="submit" class="btn btn-success">Approve</button>
             </form>
         }
-       
+
     </div>
 
-   
 
-   
+
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -151,7 +151,7 @@
     $(document).ready(function () {
         $('#approveForm').submit(function (e) {
             if (!confirm("Bạn có chắc chắn muốn phê duyệt đơn hàng này?")) {
-                e.preventDefault(); 
+                e.preventDefault();
                 return false;
             }
             return true;

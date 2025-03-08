@@ -23,22 +23,24 @@
             <!-- Placeholder for logo -->
         </div>
         <nav>
-            <a asp-controller="Order" asp-action=""  class="nav-link"><i class="fas fa-shopping-cart"></i> <span>Đơn hàng</span></a>
-            <a  class="nav-link"><i class="fas fa-exchange-alt"></i> <span>Chuyển đổi</span></a>
-            
-            <!-- Thêm dropdown cho Sản phẩm -->
-                <a asp-controller="Product" asp-action="Index" class="nav-link dropdown-toggle" >
-                    <i class="fas fa-box"></i> <span>Sản phẩm</span>
-                </a>
+            <a asp-controller="Order" asp-action="" class="nav-link"><i class="fas fa-arrow-down"></i> <span>Đơn nhập hàng</span></a>
+            <a asp-controller="Order" asp-action="Xuatkho" class="nav-link"><i class="fas fa-arrow-up"></i> <span>Đơn xuất hàng</span></a>
+            <a class="nav-link"><i class="fas fa-exchange-alt"></i> <span>Chuyển đổi</span></a>
 
             <!-- Thêm dropdown cho Sản phẩm -->
-            <a asp-controller="Category" asp-action="Index" class="nav-link ">
-                <i class="fas fa-box"></i> <span>Danh mục sản phẩm</span>
+            <a asp-controller="Product" asp-action="Index" class="nav-link dropdown-toggle">
+                <i class="fas fa-box-open"></i> <span>Sản phẩm</span>
+            </a>
+
+            <!-- Thêm dropdown cho Danh mục sản phẩm -->
+            <a asp-controller="Category" asp-action="Index" class="nav-link">
+                <i class="fas fa-list"></i> <span>Danh mục sản phẩm</span>
             </a>
 
             <a href="/Admin/Inventory" class="nav-link"><i class="fas fa-warehouse"></i> <span>Quản lý kho</span></a>
-            <a asp-controller="Supplier" asp-action="Index" class="nav-link"><i class="fas fa-users"></i> <span>Nhà cung cấp</span></a>
-            <a asp-controller="User" asp-action="" class="nav-link"><i class="fas fa-database"></i> <span>Tài khoản</span></a>
+            <a asp-controller="Supplier" asp-action="Index" class="nav-link"><i class="fas fa-truck"></i> <span>Nhà cung cấp</span></a>
+            <a asp-controller="User" asp-action="" class="nav-link"><i class="fas fa-user"></i> <span>Tài khoản</span></a>
+            <a asp-controller="Customer" asp-action="" class="nav-link"><i class="fas fa-users"></i> <span>Khách hàng</span></a>
         </nav>
     </div>
 

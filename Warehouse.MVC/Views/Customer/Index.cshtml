@@ -1,0 +1,126 @@
+﻿@model Warehouse.MVC.Models.CustomerView
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Danh sách khách hàng</h3>
+        </div>
+        <div class="card-body">
+            <!-- Thanh tìm kiếm -->
+            <div class="search-bar">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm theo tên danh mục...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i> Tìm kiếm (Ctrl + K)
+                    </button>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mb-3">
+                <a asp-controller="Customer" asp-action="Create" class="btn btn-primary">Thêm khách hàng</a>
+                <button id="deleteSelectedBtn" class="btn btn-danger" style="display: none;" onclick="deleteSelectedCustomers()">Xóa</button>
+            </div>
+
+            <form id="deleteForm" data-delete-url="@Url.Action("DeleteMultiple", "Customer")">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll"></th>
+                            <th>Tên</th>
+                            <th>SĐT</th>
+                            <th>Email</th>
+                            <th>Địa chỉ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cus in Model.Customers)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="selectedCustomers" value="@cus.CustomerId" class="customerCheckbox">
+                                </td>
+                                <td>
+                                    <a style="text-decoration:none;" asp-controller="Customer" asp-action="Update" asp-route-id="@cus.CustomerId" class="product-link">
+                                        @cus.FullName
+                                    </a>
+                                </td>
+                                <td>@cus.Phone</td>
+                                <td>@cus.Email</td>
+                                <td>@cus.Address</td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+@await Html.PartialAsync("_ToastPartial")
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/category-index.css" />
+}
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="~/js/category-index.js"></script>
+    <script>
+        $(document).ready(function () {
+            toggleDeleteButton();
+
+            // Xử lý checkbox "Chọn tất cả"
+            $('#selectAll').on('change', function () {
+                $('.customerCheckbox').prop('checked', $(this).prop('checked'));
+                toggleDeleteButton();
+            });
+
+            // Xử lý khi checkbox khách hàng thay đổi
+            $('.customerCheckbox').on('change', function () {
+                $('#selectAll').prop('checked', $('.customerCheckbox:checked').length === $('.customerCheckbox').length);
+                toggleDeleteButton();
+            });
+
+            // Hàm hiển thị/ẩn button Xóa
+            function toggleDeleteButton() {
+                if ($('.customerCheckbox:checked').length > 0) {
+                    $('#deleteSelectedBtn').show();
+                } else {
+                    $('#deleteSelectedBtn').hide();
+                }
+            }
+        });
+
+        // Hàm xóa các khách hàng đã chọn
+        function deleteSelectedCustomers() {
+            if (confirm('Bạn có chắc chắn muốn xóa các khách hàng đã chọn?')) {
+                var selectedIds = $('.customerCheckbox:checked').map(function () {
+                    return $(this).val();
+                }).get();
+
+                $.ajax({
+                    url: '@Url.Action("DeleteMultiple", "Customer")', // Đường dẫn đúng tới API
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(selectedIds), // Gửi mảng ID dưới dạng JSON
+                    success: function (response) {
+                        if (response.success) {
+                           
+                            location.reload(); // Tải lại trang sau khi xóa thành công
+                        } 
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Đã xảy ra lỗi khi xóa khách hàng: ' + error);
+                    }
+                });
+            }
+        }
+    </script>
+}}

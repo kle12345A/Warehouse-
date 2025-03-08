@@ -17,15 +17,17 @@ public partial class Order
 
     public int UserId { get; set; }
 
-    public int? ShippingId { get; set; }
-
     public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
 
-    public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+    public string? Note { get; set; }
 
-    public virtual Shipping? Shipping { get; set; }
+    public int? CustomerId { get; set; }
+
+    public virtual Customer? Customer { get; set; }
+
+    public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
     public virtual Supplier? Supplier { get; set; }
 

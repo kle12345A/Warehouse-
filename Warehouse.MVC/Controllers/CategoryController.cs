@@ -97,6 +97,7 @@ namespace Warehouse.MVC.Controllers
             }
             return null;
         }
+
         private async Task<List<CategoryProduct>> GetCategoryAsync()
         {
             using (HttpClient client = new HttpClient())

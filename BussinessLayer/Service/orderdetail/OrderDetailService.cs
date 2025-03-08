@@ -22,5 +22,10 @@ namespace BussinessLayer.Service.orderdetail
             return await _orderDetailRepository.GetOrderDetailsWithSupplierByOrderIdAsync(id);
         }
 
+        public async Task<OrderDetailWithCustomerDTO> GetAllWithCustomerAsync(int id)
+        {
+            return await _orderDetailRepository.GetOrderDetailsWithCutsomerByOrderIdAsync(id);
+
+        }
     }
 }

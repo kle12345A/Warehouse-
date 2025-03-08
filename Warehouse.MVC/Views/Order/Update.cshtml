@@ -1,0 +1,189 @@
+﻿@model Warehouse.MVC.Models.OrderVIew
+@{
+    ViewData["Title"] = "Update Order";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="container mt-5">
+        <h3 class="card-title">Cập nhật đơn hàng</h3>
+        <form asp-action="Update" method="post">
+            <!-- Thông tin đơn hàng -->
+            <div class="card mb-4">
+                <div class="card-header">Thông tin đơn hàng</div>
+                <div class="card-body">
+                    <input type="hidden" name="OrderId" value="@Model.OrderDTOs.OrderId" />
+                    <input type="hidden" name="UserId" value="@Model.OrderDTOs.UserId" />
+                    <div class="mb-3">
+                        <label class="form-label">Nhà cung cấp</label>
+                        <select class="form-select" name="SupplierId" required>
+                            <option value="">Chọn nhà cung cấp</option>
+                            @foreach (var supplier in Model.Suppliers)
+                            {
+                                <option value="@supplier.SupplierId" )>@supplier.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ngày đặt hàng</label>
+                        <input type="datetime-local" class="form-control" name="OrderDate" value="@(Model.OrderDTOs.OrderDate.HasValue ? Model.OrderDTOs.OrderDate.Value.ToString("yyyy-MM-ddTHH:mm") : "")" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Loại đơn hàng</label>
+                        <select class="form-select" name="OrderType" disabled>
+                            @if (Model.OrderDTOs.OrderType == 1)
+                            {
+                                <option value="1" selected>Nhập kho</option>
+                            }
+                            else
+                            {
+                                <option value="2" selected>Xuất kho</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái</label>
+                        @Html.DropDownListFor(model => model.OrderDTOs.Status, new SelectList(Model.StatusList, "StatusId", "StatusName", Model.OrderDTOs.Status), "Chọn trạng thái", new { @class = "form-select", required = "required" })
+                    </div>
+                   
+                </div>
+            </div>
+
+            <!-- Chi tiết đơn hàng -->
+            <div class="card mb-4">
+                <div class="card-header">Chi tiết đơn hàng</div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá</th>
+                                <th>Tổng giá</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.OrderDetailsDTO != null && Model.OrderDetailsDTO.Any())
+                            {
+                                foreach (var item in Model.OrderDetailsDTO)
+                                {
+                                    <tr>
+                                        <td>
+                                            @(Model.Products?.FirstOrDefault(p => p.ProductId == item.ProductId)?.Name ?? "Không tìm thấy")
+                                            <input type="hidden" name="OrderDetails[@item.OrderDetailId].OrderDetailId" value="@item.OrderDetailId" />
+                                            <input type="hidden" name="OrderDetails[@item.OrderDetailId].ProductId" value="@item.ProductId" />
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control quantity-input" name="OrderDetails[@item.OrderDetailId].Quantity" value="@item.Quantity" min="1" onchange="updateTotalPrice(this, @item.OrderDetailId)">
+                                            <input type="hidden" name="OrderDetails[@item.OrderDetailId].UnitPrice" value="@item.UnitPrice" />
+                                        </td>
+                                        <td>@item.UnitPrice.ToString("N0") VNĐ</td>
+                                        <td class="total-price" data-order-detail-id="@item.OrderDetailId">@(item.UnitPrice * item.Quantity).ToString("N0") VNĐ</td>
+                                        <td>
+                                            <a asp-action="RemoveSessionForUpdate" asp-route-orderId="@Model.OrderDTOs.OrderId" asp-route-productId="@item.ProductId" class="btn btn-danger btn-sm">Xóa</a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5">Chưa có sản phẩm nào trong đơn hàng.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <button style="margin-bottom:1%;" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+                        Thêm sản phẩm
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal chọn sản phẩm -->
+            <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="productModalLabel">Chọn sản phẩm</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="addProductForm" asp-action="AddToSessionForUpdate" asp-controller="Order" asp-route-orderId="@Model.OrderDTOs.OrderId" method="post">
+                                @Html.AntiForgeryToken()
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Chọn</th>
+                                            <th>Hình ảnh</th>
+                                            <th>Tên sản phẩm</th>
+                                            <th>Giá</th>
+                                            <th>Số lượng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var product in Model.Products)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox" name="SelectedProducts" value="@product.ProductId" class="product-checkbox">
+                                                </td>
+                                                <td>
+                                                    <img src="@product.Images" alt="@product.Name" width="60" class="img-thumbnail">
+                                                </td>
+                                                <td>@product.Name</td>
+                                                <td>@product.Price.ToString("N0") đ</td>
+                                                <td>
+                                                    <input type="number" name="SelectedProducts[@product.ProductId].Quantity" class="form-control product-quantity" min="1" value="1" disabled>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                    <button type="submit" class="btn btn-success" id="addProductBtn">Thêm vào đơn</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nút hành động -->
+            <div class="d-flex justify-content-between">
+                <a asp-controller="Order" asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+                <button type="submit" class="btn btn-primary">Cập nhật đơn hàng</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Enable số lượng khi checkbox được chọn
+        $('.product-checkbox').on('change', function () {
+            var quantityInput = $(this).closest('tr').find('.product-quantity');
+            quantityInput.prop('disabled', !this.checked);
+            if (!this.checked) {
+                quantityInput.val(1); // Reset về 1 khi bỏ chọn
+            }
+        });
+
+        // Debug submit form
+        $('#addProductForm').on('submit', function () {
+            console.log("Form trong modal đang submit...");
+            console.log($(this).serialize());
+        });
+    });
+
+    function updateTotalPrice(input, orderDetailId) {
+        var quantity = parseInt(input.value);
+        var unitPrice = parseFloat($(input).siblings('input[name="OrderDetails[' + orderDetailId + '].UnitPrice"]').val());
+        var totalPrice = quantity * unitPrice;
+        $('td.total-price[data-order-detail-id="' + orderDetailId + '"]').text(totalPrice.toLocaleString('vi-VN') + ' VNĐ');
+    }
+</script>
