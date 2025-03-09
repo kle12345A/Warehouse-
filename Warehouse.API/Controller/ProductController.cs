@@ -1,4 +1,5 @@
-﻿using BussinessLayer.Service.product;
+﻿using BussinessLayer.Service.import;
+using BussinessLayer.Service.product;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
@@ -13,13 +14,36 @@ namespace Warehouse.API.Controller
     {
         private readonly IProductService _productService;
         private readonly Cloudinary _cloudinary;
-        public ProductsController(IProductService productService, Cloudinary cloudinary)
+        private readonly IProductImportService _productImportService;
+        public ProductsController(IProductService productService, Cloudinary cloudinary,IProductImportService productImportService)
         {
             _productService = productService;
             _cloudinary = cloudinary;
+            _productImportService = productImportService;
         }
 
-       
+        // POST api/monthlyreport/read-file-month-report
+        [HttpPost("read-file-product")]
+        public async Task<IActionResult> ImportExcel(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded.");
+            }
+
+            try
+            {
+                using (var stream = file.OpenReadStream())
+                {
+                    var records = await _productImportService.ReadExcelFileAsync(stream);
+                    return Ok(records);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+            }
+        }
         [HttpGet]
         public async Task<ActionResult<List<ProductDTO>>> GetAllProducts()
         {
@@ -49,11 +73,11 @@ namespace Warehouse.API.Controller
                 Name = request.Name,
                 Description = request.Description,
                 Unit = request.Unit,
-                Quantity = request.Quantity,
                 AvailableQuantity = request.AvailableQuantity,
                 Price = request.Price,
                 CostPrice = request.CostPrice,
                 CategoryId = request.CategoryId
+                
             };
 
             if (request.ImageFile != null && request.ImageFile.Length > 0)
@@ -81,6 +105,30 @@ namespace Warehouse.API.Controller
             return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.ProductId }, createdProduct);
         }
 
+
+        [HttpPost("create-product")]
+        
+        public async Task<ActionResult<ProductDTO>> CreateProduct2([FromBody] CreateProductRequest2 request)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var productDto = new ProductDTO
+            {
+                Name = request.Name,
+                Description = request.Description,
+                Unit = request.Unit,
+                AvailableQuantity = request.AvailableQuantity,
+                Price = request.Price,
+                CostPrice = request.CostPrice,
+                CategoryId = request.CategoryId,
+                Images = request.Images,
+
+            };
+
+          
+            var createdProduct = await _productService.CreateProductAsync(productDto);
+            return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.ProductId }, createdProduct);
+        }
 
 
 

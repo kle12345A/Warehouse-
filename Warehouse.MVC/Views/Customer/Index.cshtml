@@ -11,16 +11,18 @@
             <h3 class="card-title">Danh sách khách hàng</h3>
         </div>
         <div class="card-body">
-            <!-- Thanh tìm kiếm -->
-            <div class="search-bar">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Tìm kiếm theo tên danh mục...">
-                    <button class="btn btn-outline-secondary" type="button">
-                        <i class="bi bi-search"></i> Tìm kiếm (Ctrl + K)
-                    </button>
+            <!-- Form lọc -->
+            <form id="filterForm" method="get" asp-action="Index" asp-controller="Customer">
+                <!-- Thanh tìm kiếm -->
+                <div class="search-bar">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" value="@ViewBag.Search" placeholder="Tìm kiếm theo tên, SĐT, email, địa chỉ...">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="bi bi-search"></i> Tìm kiếm (Ctrl + K)
+                        </button>
+                    </div>
                 </div>
-            </div>
-
+            </form>
             <div class="d-flex justify-content-between mb-3">
                 <a asp-controller="Customer" asp-action="Create" class="btn btn-primary">Thêm khách hàng</a>
                 <button id="deleteSelectedBtn" class="btn btn-danger" style="display: none;" onclick="deleteSelectedCustomers()">Xóa</button>
@@ -38,25 +40,50 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var cus in Model.Customers)
+                        @if (Model.Customers != null && Model.Customers.Any())
+                        {
+                            @foreach (var cus in Model.Customers)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" name="selectedCustomers" value="@cus.CustomerId" class="customerCheckbox">
+                                    </td>
+                                    <td>
+                                        <a style="text-decoration:none;" asp-controller="Customer" asp-action="Update" asp-route-id="@cus.CustomerId" class="product-link">
+                                            @cus.FullName
+                                        </a>
+                                    </td>
+                                    <td>@cus.Phone</td>
+                                    <td>@cus.Email</td>
+                                    <td>@cus.Address</td>
+                                </tr>
+                            }
+                        }
+                        else
                         {
                             <tr>
-                                <td>
-                                    <input type="checkbox" name="selectedCustomers" value="@cus.CustomerId" class="customerCheckbox">
-                                </td>
-                                <td>
-                                    <a style="text-decoration:none;" asp-controller="Customer" asp-action="Update" asp-route-id="@cus.CustomerId" class="product-link">
-                                        @cus.FullName
-                                    </a>
-                                </td>
-                                <td>@cus.Phone</td>
-                                <td>@cus.Email</td>
-                                <td>@cus.Address</td>
+                                <td colspan="5" class="text-center">Không có khách hàng nào.</td>
                             </tr>
                         }
                     </tbody>
 
                 </table>
+                <nav aria-label="Page navigation" class="mt-auto">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @(ViewBag.Page == 1 ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.Page - 1, pageSize = 5, search = ViewBag.Search })">Previous</a>
+                        </li>
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { page = i, pageSize = 5, search = ViewBag.Search })">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(ViewBag.Page == ViewBag.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.Page + 1, pageSize = 5, search = ViewBag.Search })">Next</a>
+                        </li>
+                    </ul>
+                </nav>
             </form>
         </div>
     </div>

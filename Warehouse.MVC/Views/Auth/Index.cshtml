@@ -1,0 +1,73 @@
+﻿
+@{
+    Layout = null;
+}
+
+
+<div class="container login-container">
+    <div class="row">
+        <!-- Hình ảnh sách -->
+        <div class="col-md-6 ">
+            <img style="width:80%;" src="https://khothietke.net/wp-content/uploads/2021/05/PNGkhothietke.net-02705.png" alt="Books">
+        </div>
+        <!-- Form đăng nhập -->
+        <div class="col-md-6">
+            <div class="login-box">
+                <h3>Book Stores Login</h3>
+                <form asp-controller="Auth" asp-action="Login" method="post" id="loginForm" novalidate>
+                    <div class="mb-3">
+                        <input type="email" id="emailAddress" name="emailAddress" class="form-control" placeholder="Email address" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button style="width:100%;" type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                        <div class="col-md-6">
+                            <a asp-controller="Auth" asp-action="Register" class="btn btn-secondary w-100">Sign up</a>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+                    {
+                        <div style="color: red; font-weight: bold;">
+                            @ViewBag.ErrorMessage
+                        </div>
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+
+
+    .login-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+
+    .login-box {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        width: 400px;
+    }
+
+        .login-box h3 {
+            text-align: center;
+            color: blue;
+            margin-bottom: 20px;
+        }
+
+        .login-box img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+        }
+</style>

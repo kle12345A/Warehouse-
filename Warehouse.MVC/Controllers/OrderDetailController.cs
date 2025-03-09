@@ -33,7 +33,7 @@ namespace Warehouse.MVC.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ApproveOrder(int id)
+        public async Task<IActionResult> ApproveOrder([FromForm] int id)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -66,7 +66,7 @@ namespace Warehouse.MVC.Controllers
                     var jsonContent = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
 
                     // Gọi API PATCH để phê duyệt
-                    using (HttpResponseMessage res = await client.PatchAsync($"{UrlOrderC}/{id}/status", jsonContent))
+                    using (HttpResponseMessage res = await client.PatchAsync($"{UrlOrder}/{id}/status", jsonContent))
                     {
                         if (res.IsSuccessStatusCode)
                         {

@@ -11,41 +11,43 @@
             <h3 class="card-title">Danh sách sản phẩm</h3>
         </div>
         <div class="card-body">
-            <!-- Thanh tìm kiếm -->
-            <div class="search-bar">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Tìm kiếm theo mã sản phẩm, tên sản phẩm, t...">
-                    <button class="btn btn-outline-secondary" type="button">
-                        <i class="bi bi-search"></i> Tìm kiếm (Ctrl + K)
-                    </button>
+          <form id="filterForm" method="get" asp-action="Index" asp-controller="Product">
+                <!-- Thanh tìm kiếm -->
+                <div class="search-bar">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" value="@ViewBag.Search" placeholder="Tìm kiếm theo mã sản phẩm, tên sản phẩm, t...">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="bi bi-search"></i> Tìm kiếm (Ctrl + K)
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Bộ lọc -->
-            <div class="filter-bar">
-                <select class="form-select" style="width: auto;">
-                    <option>Kênh bán hàng</option>
-                    <option>Tất cả</option>
-                    <option>Kênh A</option>
-                    <option>Kênh B</option>
-                </select>
-                <select class="form-select" style="width: auto;">
-                    <option>Loại sản phẩm</option>
-                    <option>Tất cả</option>
-                    <option>Món khai vị</option>
-                    <option>Món chính</option>
-                </select>
-                <select class="form-select" style="width: auto;">
-                    <option>Tag</option>
-                    <option>Tất cả</option>
-                    <option>Hot</option>
-                    <option>New</option>
-                </select>
-                <button class="btn btn-outline-primary">Bộ lọc khác</button>
-                <button class="btn btn-outline-success">Lưu bộ lọc</button>
-            </div>
+                <!-- Bộ lọc -->
+                <div class="filter-bar">
+                    <select class="form-select" style="width: auto;" name="categoryId" onchange="this.form.submit()">
+                        <option value="">Loại sản phẩm</option>
+                        @foreach (var item in Model.Categories)
+                        {
+                            if (ViewBag.CategoryId == item.CategoryId)
+                            {
+                                <option value="@item.CategoryId" selected>@item.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@item.CategoryId">@item.Name</option>
+                            }
+                        }
+                    </select>
+                    <button class="btn btn-outline-primary" type="button">Bộ lọc khác</button>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary">Xóa bộ lọc</a>
+                </div>
+            </form>
             <div class="d-flex justify-content-between mb-3">
-                <a asp-controller="Product" asp-action="Create" class="btn btn-primary">Tạo mới sản phẩm</a>
+                <div>
+                    <a asp-controller="Product" asp-action="Create" class="btn btn-primary">Tạo mới sản phẩm</a>
+                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#importModal">Import Excel</a>
+                </div>
+               
                 <button id="deleteSelectedBtn" class="btn btn-danger" style="display: none;" onclick="deleteSelectedProducts()">Xóa</button>
             </div>
 
@@ -85,7 +87,18 @@
                         }
 
                     </tbody>
+                    
                 </table>
+                <nav aria-label="Page navigation" class="mt-auto">
+                    <ul class="pagination justify-content-center">
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { page = i, pageSize = 5 })">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
             </form>
         </div>
     </div>
@@ -110,6 +123,38 @@
                 @TempData["ErrorMessage"]
             </div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Import Excel -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importModalLabel">Nhập sản phẩm từ Excel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="importForm" enctype="multipart/form-data" asp-action="ReadFileAndPreview" asp-controller="Product" method="post">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Chọn file Excel</label>
+                        <input type="file" class="form-control" name="file" id="file" accept=".xls,.xlsx" required>
+                        <small class="form-text text-muted">Chỉ chấp nhận file: .xls, .xlsx</small>
+                    </div>
+                    <!-- Nút tải file mẫu -->
+                    <div class="mb-3">
+                        <a href="/uploads/ImportProduct.xlsx" class="btn btn-outline-info" download>
+                            <i class="bi bi-download"></i> Tải file mẫu
+                        </a>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary ms-2">Nhập dữ liệu</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -156,6 +201,57 @@
                 toast.show();
             }
         });
+        $(document).ready(function () {
+            // Gọi toggleDeleteButton khi trang tải để kiểm tra trạng thái ban đầu
+            toggleDeleteButton();
 
+            // Xử lý checkbox "Chọn tất cả"
+            $('#selectAll').on('change', function () {
+                $('.productCheckbox').prop('checked', $(this).prop('checked'));
+                toggleDeleteButton();
+            });
+
+            // Xử lý khi checkbox sản phẩm thay đổi
+            $('.productCheckbox').on('change', function () {
+                $('#selectAll').prop('checked', $('.productCheckbox:checked').length === $('.productCheckbox').length);
+                toggleDeleteButton();
+            });
+
+            // Hàm hiển thị/ẩn button Xóa
+            function toggleDeleteButton() {
+                if ($('.productCheckbox:checked').length > 0) {
+                    $('#deleteSelectedBtn').show();
+                } else {
+                    $('#deleteSelectedBtn').hide();
+                }
+            }
+        });
+
+        // Hàm xóa các sản phẩm đã chọn
+        function deleteSelectedProducts() {
+            if (confirm('Bạn có chắc chắn muốn xóa các sản phẩm đã chọn?')) {
+                var selectedIds = $('.productCheckbox:checked').map(function () {
+                    return $(this).val();
+                }).get();
+
+                $.ajax({
+                    url: '@Url.Action("DeleteMultiple", "Product")', // URL sẽ được thay thế trong view
+                    type: 'POST',
+                    data: { ids: selectedIds },
+                    traditional: true,
+                    success: function (response) {
+                        if (response.success) {
+                            alert('Xóa thành công!');
+                            location.reload(); // Tải lại trang để cập nhật danh sách
+                        } else {
+                            alert('Xóa thất bại: ' + response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('Đã xảy ra lỗi khi xóa sản phẩm.');
+                    }
+                });
+            }
+        }
     </script>
 }

@@ -8,12 +8,34 @@ namespace Warehouse.MVC.Controllers
     public class UserController : Controller
     {
         private string UrlGet = "https://localhost:7200/api/User";
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 5, string search = null)
         {
-            var user = await GetUserAsync();
-            var view = new UserView()
+            var users = await GetUserAsync();
+            var filteredUsers = users?.ToList() ?? new List<UserDTO>();
+
+            // Lọc phía client
+            if (!string.IsNullOrEmpty(search))
             {
-                UserDTOs = user
+                filteredUsers = filteredUsers
+                    .Where(u => (u.Username?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                                (u.FullName?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                                (u.Phone?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                                (u.Email?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) )
+                              
+                    .ToList();
+            }
+
+            int totalItems = filteredUsers.Count;
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            var pagedData = filteredUsers.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.Page = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.Search = search; // Lưu trạng thái tìm kiếm
+
+            var view = new UserView
+            {
+                UserDTOs = pagedData
             };
             return View(view);
         }

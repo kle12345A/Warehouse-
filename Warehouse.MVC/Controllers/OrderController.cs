@@ -13,21 +13,100 @@ namespace Warehouse.MVC.Controllers
         private string UrlSup = "https://localhost:7200/api/Supplier";
         private string UrlCus = "https://localhost:7200/api/Customer";
         private string UrlProduct = "https://localhost:7200/api/Products";
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 5, int? status = null, string dateFilter = null, string search = null)
         {
             var orders = await GetOrderAsync();
-            var view = new OrderVIew()
+            var filteredOrders = orders?.Where(o => o.OrderType == OrderTypeEnum.NhapKho).ToList() ?? new List<OrderListDTO>();
+
+            
+            if (!string.IsNullOrEmpty(search))
             {
-                OrderListDTO = orders?.Where(o => o.OrderType == OrderTypeEnum.NhapKho).ToList() ?? new List<OrderListDTO>()
+                filteredOrders = filteredOrders
+                    .Where(o => o.OrderId.ToString().Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                                (o.SupplierName?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false))
+                    .ToList();
+            }
+            if (status.HasValue)
+            {
+                filteredOrders = filteredOrders.Where(o => (int?)o.Status == status).ToList();
+            }
+            if (!string.IsNullOrEmpty(dateFilter))
+            {
+                switch (dateFilter.ToLower())
+                {
+                    case "hôm nay":
+                        filteredOrders = filteredOrders.Where(o => o.OrderDate.HasValue && o.OrderDate.Value.Date == DateTime.Today).ToList();
+                        break;
+                    case "7 ngày qua":
+                        filteredOrders = filteredOrders.Where(o => o.OrderDate.HasValue && o.OrderDate.Value.Date >= DateTime.Today.AddDays(-7)).ToList();
+                        break;
+                    case "tháng này":
+                        filteredOrders = filteredOrders.Where(o => o.OrderDate.HasValue && o.OrderDate.Value.Month == DateTime.Today.Month && o.OrderDate.Value.Year == DateTime.Today.Year).ToList();
+                        break;
+                }
+            }
+
+            int totalItems = filteredOrders.Count;
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            var pagedData = filteredOrders.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.Page = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.Status = status; 
+            ViewBag.DateFilter = dateFilter; 
+            ViewBag.Search = search; 
+
+            var view = new OrderVIew
+            {
+                OrderListDTO = pagedData
             };
             return View(view);
         }
-        public async Task<IActionResult> XuatKho()
+        public async Task<IActionResult> XuatKho(int page = 1, int pageSize = 5, int? status = null, string dateFilter = null, string search = null)
         {
             var orders = await GetOrderAsync();
-            var view = new OrderVIew()
+            var filteredOrders = orders?.Where(o => o.OrderType == OrderTypeEnum.XuatKho).ToList() ?? new List<OrderListDTO>();
+
+            if (!string.IsNullOrEmpty(search))
             {
-                OrderListDTO = orders?.Where(o => o.OrderType == OrderTypeEnum.XuatKho).ToList() ?? new List<OrderListDTO>()
+                filteredOrders = filteredOrders
+                    .Where(o => o.OrderId.ToString().Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                                (o.Customer?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false))
+                    .ToList();
+            }
+            if (status.HasValue)
+            {
+                filteredOrders = filteredOrders.Where(o => (int?)o.Status == status).ToList();
+            }
+            if (!string.IsNullOrEmpty(dateFilter))
+            {
+                switch (dateFilter.ToLower())
+                {
+                    case "hôm nay":
+                        filteredOrders = filteredOrders.Where(o => o.OrderDate.HasValue && o.OrderDate.Value.Date == DateTime.Today).ToList();
+                        break;
+                    case "7 ngày qua":
+                        filteredOrders = filteredOrders.Where(o => o.OrderDate.HasValue && o.OrderDate.Value.Date >= DateTime.Today.AddDays(-7)).ToList();
+                        break;
+                    case "tháng này":
+                        filteredOrders = filteredOrders.Where(o => o.OrderDate.HasValue && o.OrderDate.Value.Month == DateTime.Today.Month && o.OrderDate.Value.Year == DateTime.Today.Year).ToList();
+                        break;
+                }
+            }
+
+            int totalItems = filteredOrders.Count;
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            var pagedData = filteredOrders.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.Page = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.Status = status; 
+            ViewBag.DateFilter = dateFilter;
+            ViewBag.Search = search;
+
+            var view = new OrderVIew
+            {
+                OrderListDTO = pagedData
             };
             return View(view);
         }
@@ -64,6 +143,9 @@ namespace Warehouse.MVC.Controllers
             };
             return View(view); 
         }
+
+
+
         public async Task<IActionResult> Create()
         {
             var sup = await GetSupplierAsync();
@@ -79,6 +161,8 @@ namespace Warehouse.MVC.Controllers
             };
             return View(view);
         }
+
+
         [HttpPost]
         public async Task<IActionResult> Create(OrderCreateDTO order)
         {
@@ -98,13 +182,11 @@ namespace Warehouse.MVC.Controllers
                 TotalPrice = c.Price * c.Quantity,
             }).ToList();
 
-
-            order.CreatedAt = order.OrderDate ?? DateTime.Now; 
+            order.CreatedAt = order.OrderDate ?? DateTime.Now;
             order.UserId = 1;
             order.Status = 1;
 
-
-            string jsonData = JsonConvert.SerializeObject(order, Formatting.Indented); 
+            string jsonData = JsonConvert.SerializeObject(order, Formatting.Indented);
             Console.WriteLine("Dữ liệu gửi lên API:");
             Console.WriteLine(jsonData);
 
@@ -117,7 +199,10 @@ namespace Warehouse.MVC.Controllers
                 {
                     HttpContext.Session.Remove("CartItems");
                     TempData["SuccessMessage"] = "Tạo đơn hàng thành công!";
-                    return RedirectToAction("Index");
+
+                    return order.OrderType == 1 ?
+                        RedirectToAction("Index") :
+                        RedirectToAction("XuatKho", "Order");
                 }
                 else
                 {
@@ -125,7 +210,10 @@ namespace Warehouse.MVC.Controllers
                     return RedirectToAction("Create");
                 }
             }
+
+            return BadRequest("Lỗi không mong muốn xảy ra.");
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -135,7 +223,6 @@ namespace Warehouse.MVC.Controllers
             Console.WriteLine("OrderId: " + orderId);
             Console.WriteLine("Dữ liệu form (Update): " + JsonConvert.SerializeObject(form));
 
-            // Lấy danh sách sản phẩm được chọn
             var selectedProducts = new List<SelectedProductDto>();
             var productIds = form["SelectedProducts"].Where(x => !string.IsNullOrEmpty(x)).Select(int.Parse).ToList();
 
@@ -175,7 +262,7 @@ namespace Warehouse.MVC.Controllers
                     {
                         orderDetailsSession.Add(new OrderDetailsDTO
                         {
-                            OrderDetailId = 0, // ID tạm thời
+                            OrderDetailId = 0, 
                             ProductId = product.ProductId,
                             Quantity = selected.Quantity,
                             UnitPrice = product.Price,

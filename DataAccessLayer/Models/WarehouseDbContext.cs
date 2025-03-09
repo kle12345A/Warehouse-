@@ -130,7 +130,6 @@ public partial class WarehouseDbContext : DbContext
             entity.Property(e => e.Images).HasMaxLength(255);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
-            entity.Property(e => e.Quantity).HasDefaultValue(0);
             entity.Property(e => e.Unit).HasMaxLength(20);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 

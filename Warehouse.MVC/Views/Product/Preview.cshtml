@@ -1,0 +1,101 @@
+﻿@using System.Web
+@using WarehouseDTOs
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Preview";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card mx-auto mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">Xem trước sản phẩm</h5>
+        </div>
+        <div class="card-body">
+            <h2 class="h5 mb-4">Step 2/2: Vui lòng xem trước thông tin</h2>
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Tên</th>
+                        <th>Mô tả</th>
+                        <th>Đơn vị</th>
+                        <th>Có sẵn</th>
+                        <th>Giá</th>
+                        <th>Giá gốc</th>
+                        <th>Loại hàng</th>
+                        <th>Ảnh</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ViewBag.PreviewData != null && ((List<ProductImportDTO>)ViewBag.PreviewData).Count > 0)
+                    {
+                        foreach (var item in (List<ProductImportDTO>)ViewBag.PreviewData)
+                        {
+                            <tr>
+                                <td>@(item.Name ?? "N/A")</td>
+                                <td>@(item.Description ?? "N/A")</td>
+                                <td>@(item.Unit ?? "N/A")</td>
+                                <td>@(item.AvailableQuantity != 0 ? item.AvailableQuantity.ToString() : "0")</td>
+                                <td>@(item.Price != 0 ? item.Price.ToString("N2") : "0")</td>
+                                <td>@(item.CostPrice != 0 ? item.CostPrice.ToString("N2") : "0")</td>
+                                <td>@(item.CategoryId != 0 ? item.CategoryId.ToString() : "N/A")</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.ImagePath) && Uri.IsWellFormedUriString(item.ImagePath, UriKind.Absolute))
+                                    {
+                                        <img src="@item.ImagePath" alt="@item.Name" class="product-image" loading="lazy">
+                                    }
+                                    else
+                                    {
+                                        <img src="/images/no-image.png" alt="No image" class="product-image">
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="8">Không có dữ liệu để hiển thị.</td></tr>
+                    }
+                </tbody>
+            </table>
+
+            <form asp-action="ConfirmImport" asp-controller="Product" method="post">
+                @* Lưu toàn bộ dữ liệu từ ViewBag.PreviewData vào hidden input *@
+                @if (ViewBag.PreviewData != null)
+                {
+                    <input type="hidden" name="previewData" value="@Html.Raw(HttpUtility.HtmlEncode(Json.Serialize(ViewBag.PreviewData)))" />
+                }
+
+                <div class="d-flex justify-content-between mt-3">
+                    <a href="/Product/ImportExcel" class="btn btn-secondary">Quay lại</a>
+                    <button type="submit" class="btn btn-primary">Xác nhận và gửi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container-fluid {
+        margin-top: 20px;
+    }
+
+    .table {
+        background-color: #fff;
+    }
+
+    .product-image {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+</style>

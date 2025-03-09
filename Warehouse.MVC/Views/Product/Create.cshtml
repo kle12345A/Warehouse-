@@ -5,96 +5,66 @@
 }
 
 <div class="container-fluid">
-    <div class="container mt-5">
-        <h3 class="card-title">Thêm sản phẩm</h3>
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
-            <!-- Thông tin sản phẩm -->
-            <div class="card mb-4">
-                <div class="card-header">Thông tin sản phẩm</div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label">Tên sản phẩm *</label>
-                        <input type="text" class="form-control" name="name" placeholder="Nhập tên sản phẩm" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Đơn vị tính</label>
-                        <input type="text" class="form-control" name="unit" placeholder="Nhập đơn vị tính (VD: cái, kg, lít)">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mô tả</label>
-                        <textarea class="form-control" name="description" rows="5" placeholder="Nhập mô tả"></textarea>
-                    </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Thêm sản phẩm</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                <!-- Tên sản phẩm -->
+                <div class="mb-3">
+                    <label class="form-label">Tên sản phẩm *</label>
+                    <input type="text" class="form-control" name="name" placeholder="Nhập tên sản phẩm" required>
                 </div>
-            </div>
 
-            <!-- Ảnh sản phẩm -->
-            <div class="card mb-4">
-                <div class="card-header">Ảnh sản phẩm</div>
-                <div class="card-body">
+                <!-- Đơn vị tính -->
+                <div class="mb-3">
+                    <label class="form-label">Đơn vị tính</label>
+                    <input type="text" class="form-control" name="unit" placeholder="Nhập đơn vị tính (VD: cái, kg, lít)">
+                </div>
+
+                <!-- Mô tả -->
+                <div class="mb-3">
+                    <label class="form-label">Mô tả</label>
+                    <textarea class="form-control" name="description" rows="4" placeholder="Nhập mô tả"></textarea>
+                </div>
+
+                <!-- Ảnh sản phẩm -->
+                <div class="mb-3">
+                    <label class="form-label">Ảnh sản phẩm</label>
                     <input type="file" class="form-control" name="images" accept="image/*">
-                    <small class="text-muted">Dung lượng ảnh tối đa 2MB</small>
                 </div>
-            </div>
 
-            <!-- Tồn kho -->
-            <div class="card mb-4">
-                <div class="card-header">Thông tin tồn kho</div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Số lượng tổng</label>
-                            <input type="number" class="form-control" name="quantity" value="0" min="0">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Số lượng có sẵn</label>
-                            <input type="number" class="form-control" name="availableQuantity" value="0" min="0">
-                        </div>
+                <!-- Giá bán & Giá vốn -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Giá bán</label>
+                        <input type="number" class="form-control" name="price" value="0" min="0">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Giá vốn</label>
+                        <input type="number" class="form-control" name="costPrice" value="0" min="0">
                     </div>
                 </div>
-            </div>
 
-            <!-- Thông tin giá -->
-            <div class="card mb-4">
-                <div class="card-header">Thông tin giá</div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Giá bán</label>
-                            <input type="number" class="form-control" name="price" value="0" min="0">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Giá vốn</label>
-                            <input type="number" class="form-control" name="costPrice" value="0" min="0">
-                        </div>
-                    </div>
+                <!-- Danh mục -->
+                <div class="mb-3">
+                    <label class="form-label">Danh mục</label>
+                    <select class="form-select" name="categoryId">
+                        <option value="">Chọn danh mục</option>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.CategoryId">@category.Name</option>
+                        }
+                    </select>
                 </div>
-            </div>
 
-            <!-- Danh mục -->
-            <div class="card mb-4">
-                <div class="card-header">Danh mục sản phẩm</div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label">Danh mục</label>
-                        <select class="form-select" name="categoryId">
-                            <option value="">Chọn danh mục</option>
-
-
-                            @foreach (var category in Model.Categories)
-                            {
-                                <option value="@category.CategoryId">@category.Name</option>
-                            }
-                            } 
-                        </select>
-                    </div>
+                <!-- Nút hành động -->
+                <div class="d-flex justify-content-between">
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+                    <button type="submit" class="btn btn-primary">Thêm sản phẩm</button>
                 </div>
-            </div>
-
-            <!-- Nút hành động -->
-            <div class="d-flex justify-content-between">
-                <a asp-controller="Product" asp-action="" type="button" class="btn btn-outline-secondary" >Hủy</a>
-                <button type="submit" class="btn btn-primary">Thêm sản phẩm</button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>

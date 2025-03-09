@@ -10,17 +10,38 @@ namespace Warehouse.MVC.Controllers
     {
         private readonly string url = "https://localhost:7200/api/Customer";
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 5, string search = null)
         {
             var customers = await GetCustomerAsync();
-            var view = new CustomerView()
+            var filteredCustomers = customers?.ToList() ?? new List<CustomerDTO>();
+
+           
+            if (!string.IsNullOrEmpty(search))
             {
-                Customers = customers,
+                filteredCustomers = filteredCustomers
+                    .Where(c => (c.FullName?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                                (c.Phone?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                                (c.Email?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                                (c.Address?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false))
+                    .ToList();
+            }
+
+            int totalItems = filteredCustomers.Count;
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            var pagedData = filteredCustomers.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.Page = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.Search = search;
+
+            var view = new CustomerView
+            {
+                Customers = pagedData
             };
             return View(view);
         }
 
-        
+
         private async Task<List<CustomerDTO>> GetCustomerAsync()
         {
             using (HttpClient client = new HttpClient())

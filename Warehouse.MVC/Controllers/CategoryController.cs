@@ -13,12 +13,29 @@ namespace Warehouse.MVC.Controllers
         private string UrlCreate = "https://localhost:7200/api/Category";
         private string UrlUpdate = "https://localhost:7200/api/Category";
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 5, string search = null)
         {
-            var cate = await GetCategoryAsync();
-            var view = new CategoryView()
+            var categories = await GetCategoryAsync();
+            var filteredCategories = categories?.ToList() ?? new List<CategoryProduct>();
+
+            if (!string.IsNullOrEmpty(search))
             {
-                Categories = cate,
+                filteredCategories = filteredCategories
+                    .Where(c => c.CategoryName.Contains(search, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            int totalItems = filteredCategories.Count;
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            var pagedData = filteredCategories.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.Page = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.Search = search; // Lưu trạng thái tìm kiếm
+
+            var view = new CategoryView
+            {
+                Categories = pagedData
             };
             return View(view);
         }

@@ -4,28 +4,40 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-5">
-    <h2>Thêm Khách Hàng</h2>
-    <form asp-action="Create" method="post">
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Thêm khách hàng</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
         <div class="card mb-4">
             <div class="card-header">Thông tin khách hàng</div>
             <div class="card-body">
-                <div class="mb-3">
-                    <label class="form-label">Tên khách hàng *</label>
-                    <input type="text" class="form-control" name="fullName" value="@Model.Customer.FullName" placeholder="Nhập tên khách hàng" required>
+                <div class="row">
+                    <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Tên khách hàng *</label>
+                                    <input type="text" class="form-control" name="fullName" value="@Model.Customer.FullName" placeholder="Nhập tên khách hàng" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Số điện thoại *</label>
+                                    <input type="text" class="form-control" name="phone" value="@Model.Customer.Phone" placeholder="Nhập số điện thoại" required>
+                                </div>
+                    </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Email *</label>
+                                    <input type="email" class="form-control" name="email" value="@Model.Customer.Email" placeholder="Nhập email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Địa chỉ</label>
+                                    <input type="text" class="form-control" name="address" value="@Model.Customer.Address" placeholder="Nhập địa chỉ">
+                                </div>
+                            </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Số điện thoại *</label>
-                    <input type="text" class="form-control" name="phone" value="@Model.Customer.Phone" placeholder="Nhập số điện thoại" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Email *</label>
-                    <input type="email" class="form-control" name="email" value="@Model.Customer.Email" placeholder="Nhập email" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Địa chỉ</label>
-                    <input type="text" class="form-control" name="address" value="@Model.Customer.Address" placeholder="Nhập địa chỉ">
-                </div>
+                
+                
             </div>
         </div>
 
@@ -34,4 +46,6 @@
             <button type="submit" class="btn btn-primary">Lưu</button>
         </div>
     </form>
+</div>
+</div>
 </div>

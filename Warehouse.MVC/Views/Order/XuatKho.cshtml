@@ -11,40 +11,78 @@
             <h3 class="card-title">Danh sách đơn hàng (Xuất kho)</h3>
         </div>
         <div class="card-body">
-            <!-- Thanh tìm kiếm -->
-            <div class="search-bar mb-3">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Tìm kiếm theo mã đơn hàng, vận đơn, SĐT khách hàng...">
-                    <button class="btn btn-outline-secondary" type="button">
-                        <i class="bi bi-search"></i> Tìm kiếm (Ctrl + K)
-                    </button>
+            <!-- Form lọc -->
+            <form id="filterForm" method="get" asp-action="XuatKho" asp-controller="Order">
+                <!-- Thanh tìm kiếm -->
+                <div class="search-bar mb-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" value="@ViewBag.Search" placeholder="Tìm kiếm theo mã đơn hàng, vận đơn, SĐT khách hàng...">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="bi bi-search"></i> Tìm kiếm (Ctrl + K)
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Bộ lọc -->
-            <div class="filter-bar d-flex flex-wrap gap-2 mb-3">
-                <select class="form-select" style="width: auto;">
-                    <option>Trạng thái giao hàng</option>
-                    <option>Tất cả</option>
-                    <option>Đang xử lý</option>
-                    <option>Đã giao</option>
-                    <option>Hủy</option>
-                </select>
-                <select class="form-select" style="width: auto;">
-                    <option>Trạng thái thanh toán</option>
-                    <option>Tất cả</option>
-                    <option>Đã thanh toán</option>
-                    <option>Chưa thanh toán</option>
-                </select>
-                <select class="form-select" style="width: auto;">
-                    <option>Ngày tạo</option>
-                    <option>Hôm nay</option>
-                    <option>7 ngày qua</option>
-                    <option>Tháng này</option>
-                </select>
-                <button class="btn btn-outline-primary">Bộ lọc khác</button>
-                <button class="btn btn-outline-success">Lưu bộ lọc</button>
-            </div>
+                <!-- Bộ lọc -->
+                <div class="filter-bar d-flex flex-wrap gap-2 mb-3">
+                    <select class="form-select" style="width: auto;" name="status" onchange="this.form.submit()">
+                        <option value="">Trạng thái đơn</option>
+                        @if (ViewBag.Status == 0)
+                        {
+                            <option value="0" selected>Tất cả</option>
+                        }
+                        else
+                        {
+                            <option value="0">Tất cả</option>
+                        }
+                        @if (ViewBag.Status == 2)
+                        {
+                            <option value="2" selected>Đã duyệt</option>
+                        }
+                        else
+                        {
+                            <option value="2">Đã duyệt</option>
+                        }
+                        @if (ViewBag.Status == 1)
+                        {
+                            <option value="1" selected>Chờ duyệt</option>
+                        }
+                        else
+                        {
+                            <option value="1">Chờ duyệt</option>
+                        }
+                    </select>
+                    <select class="form-select" style="width: auto;" name="dateFilter" onchange="this.form.submit()">
+                        <option value="">Ngày tạo</option>
+                        @if (ViewBag.DateFilter == "Hôm nay")
+                        {
+                            <option value="Hôm nay" selected>Hôm nay</option>
+                        }
+                        else
+                        {
+                            <option value="Hôm nay">Hôm nay</option>
+                        }
+                        @if (ViewBag.DateFilter == "7 ngày qua")
+                        {
+                            <option value="7 ngày qua" selected>7 ngày qua</option>
+                        }
+                        else
+                        {
+                            <option value="7 ngày qua">7 ngày qua</option>
+                        }
+                        @if (ViewBag.DateFilter == "Tháng này")
+                        {
+                            <option value="Tháng này" selected>Tháng này</option>
+                        }
+                        else
+                        {
+                            <option value="Tháng này">Tháng này</option>
+                        }
+                    </select>
+                    <button class="btn btn-outline-primary" type="button">Bộ lọc khác</button>
+                    <a href="@Url.Action("XuatKho")" class="btn btn-outline-secondary">Xóa bộ lọc</a>
+                </div>
+            </form>
 
             <div class="d-flex justify-content-between mb-3">
                 <a asp-controller="Order" asp-action="Create" class="btn btn-primary">Tạo đơn hàng</a>
@@ -107,6 +145,22 @@
                         }
                     </tbody>
                 </table>
+                <nav aria-label="Page navigation" class="mt-auto">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @(ViewBag.Page == 1 ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("XuatKho", new { page = ViewBag.Page - 1, pageSize = 5, status = ViewBag.Status, dateFilter = ViewBag.DateFilter, search = ViewBag.Search })">Previous</a>
+                        </li>
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("XuatKho", new { page = i, pageSize = 5, status = ViewBag.Status, dateFilter = ViewBag.DateFilter, search = ViewBag.Search })">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(ViewBag.Page == ViewBag.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("XuatKho", new { page = ViewBag.Page + 1, pageSize = 5, status = ViewBag.Status, dateFilter = ViewBag.DateFilter, search = ViewBag.Search })">Next</a>
+                        </li>
+                    </ul>
+                </nav>
             </form>
         </div>
     </div>

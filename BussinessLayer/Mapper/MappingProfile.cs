@@ -20,6 +20,13 @@ namespace BussinessLayer.Mapper
             CreateMap<UpdateProductRequest, Product>();
 
             CreateMap<Product, UpdateProductRequest>();
+
+            CreateMap<Product, ProductDTO>().ReverseMap();
+            CreateMap<Product, UpdateProductRequest>().ReverseMap();
+            CreateMap<ProductDTO, Product>()
+            .ForMember(dest => dest.Category, opt => opt.Ignore()); // Bỏ qua ánh xạ Category
+            CreateMap<Product, ProductDTO>()
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name));
             // Order
             CreateMap<Order, OrderDTO>();
             CreateMap<OrderDTO, Order>();

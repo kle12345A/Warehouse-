@@ -23,6 +23,7 @@ using BussinessLayer.Service.orderdetail;
 using BussinessLayer.Service.order;
 using BussinessLayer.Service.customer;
 using DataAccessLayer.Repository.customer;
+using BussinessLayer.Service.import;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add DbContext
@@ -63,6 +64,7 @@ builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+builder.Services.AddScoped<IProductImportService, ProductImportService>();
 
 
 // Register Services

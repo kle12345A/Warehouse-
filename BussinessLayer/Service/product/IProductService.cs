@@ -17,5 +17,6 @@ namespace BussinessLayer.Service.product
         Task<UpdateProductRequest> UpdateProductAsync(int id, UpdateProductRequest productDto);
         Task<bool> DeleteProductAsync(int id);
         Task<bool> DeleteMultipleProductsAsync(List<int> ids);
+
     }
 }

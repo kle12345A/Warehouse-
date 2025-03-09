@@ -28,6 +28,7 @@ namespace BussinessLayer.Service.product
             var product = _mapper.Map<Product>(productDto);
             product.CreatedAt = DateTime.Now;
             product.CreatedBy = 1; 
+            product.AvailableQuantity = 0;
             await AddAsync(product);
             return _mapper.Map<ProductDTO>(product);
         }
