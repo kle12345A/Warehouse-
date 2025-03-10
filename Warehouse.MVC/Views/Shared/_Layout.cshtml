@@ -1,4 +1,6 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IHttpContextAccessor HttpContextAccessor
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,36 +41,34 @@
             <a asp-controller="Supplier" asp-action="Index" class="nav-link"><i class="fas fa-truck"></i> <span>Nhà cung cấp</span></a>
             <a asp-controller="User" asp-action="" class="nav-link"><i class="fas fa-user"></i> <span>Tài khoản</span></a>
             <a asp-controller="Customer" asp-action="" class="nav-link"><i class="fas fa-users"></i> <span>Khách hàng</span></a>
-            <a asp-controller="Auth" asp-action="" class="btn btn-primary">Login</a>
+        
         </nav>
     </div>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light" id="navbar">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm" id="navbar">
         <div class="container-fluid">
-            
+
             <div class="ms-auto d-flex align-items-center">
-                <div class="dropdown me-3">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-bell"></i> <span class="badge bg-danger">9</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
-                        <li><a class="dropdown-item" href="#">Thông báo 1</a></li>
-                        <li><a class="dropdown-item" href="#">Thông báo 2</a></li>
-                    </ul>
-                </div>
-                <div class="dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        Admin 09H
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="#">Hồ sơ</a></li>
-                        <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
-                    </ul>
-                </div>
+                @{
+                    var userEmail = HttpContextAccessor.HttpContext?.Session.GetString("UserName");
+                }
+
+                @if (!string.IsNullOrEmpty(userEmail))
+                {
+                    <div class="d-flex align-items-center">
+                        <span class="me-3">👋 Xin chào, <strong>@userEmail</strong>!</span>
+                        <a class="btn btn-outline-primary btn-sm" href="/Auth/Logout">Đăng xuất</a>
+                    </div>
+                }
+                else
+                {
+                    <a class="btn btn-primary btn-sm" href="/Account/Login">Đăng nhập</a>
+                }
             </div>
         </div>
     </nav>
+
 
     <!-- Main content -->
     <div class="content" id="content">

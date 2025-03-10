@@ -16,5 +16,7 @@ namespace BussinessLayer.Service.user
         Task<UserDTO> CreateUserAsync(UserDTO userDto);
         Task<UserDTO> UpdateUserAsync(int id, UserDTO userDto);
         Task<bool> DeleteUserAsync(int id);
+        Task<UserInfoDTO?> Login(UserLogin userLogin);
+
     }
 }

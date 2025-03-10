@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Text;
 using Warehouse.MVC.Models;
 using WarehouseDTOs;
 
@@ -8,6 +9,7 @@ namespace Warehouse.MVC.Controllers
     public class UserController : Controller
     {
         private string UrlGet = "https://localhost:7200/api/User";
+
         public async Task<IActionResult> Index(int page = 1, int pageSize = 5, string search = null)
         {
             var users = await GetUserAsync();
@@ -43,6 +45,27 @@ namespace Warehouse.MVC.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(UserDTO user)
+        {
+
+
+            string json = JsonConvert.SerializeObject(user);
+            using (HttpClient client = new HttpClient())
+            {
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync(UrlGet, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+
+            return RedirectToAction("Index");
+        }
+
 
         //=======================
         private async Task<UserDTO> GetCategoryByIdAsync(int id)

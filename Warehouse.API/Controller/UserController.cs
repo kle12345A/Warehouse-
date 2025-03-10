@@ -62,5 +62,21 @@ namespace Warehouse.API.Controllers
 
             return NoContent();
         }
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody] UserLogin userLogin)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userInfo = await _userService.Login(userLogin);
+            if (userInfo == null)
+            {
+                return BadRequest("Sai tên đăng nhập hoặc mật khẩu");
+            }
+
+            return Ok(userInfo);
+        }
     }
 }

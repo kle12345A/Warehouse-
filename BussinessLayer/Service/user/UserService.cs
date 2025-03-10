@@ -5,6 +5,7 @@ using DataAccessLayer.Repository.user;
 using WarehouseDTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace BussinessLayer.Service.user
 {
@@ -82,6 +83,33 @@ namespace BussinessLayer.Service.user
             }
 
             return await DeleteAsync(id);
+        }
+
+        public async Task<UserInfoDTO?> Login(UserLogin userLogin)
+        {
+            if (userLogin == null || string.IsNullOrEmpty(userLogin.EmailAddress) || string.IsNullOrEmpty(userLogin.Password))
+            {
+                return null;
+            }
+
+            var user = await _userRepository.GetQuery()
+     .FirstOrDefaultAsync(u =>
+         ( u.Email == userLogin.EmailAddress)
+         && u.Password == userLogin.Password);
+
+
+            if (user != null)
+            {
+                return new UserInfoDTO
+                {
+                    UserId = user.UserId,
+                    UserName = user.Username,
+                    EmailAddress = user.Email,
+                    RoleId = user.Role,
+                };
+            }
+
+            return null;
         }
     }
 }
