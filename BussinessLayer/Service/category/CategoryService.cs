@@ -47,11 +47,18 @@ namespace BussinessLayer.Service.category
 
         public async Task<CategoryDTO> CreateCategoryAsync(CategoryDTO categoryDto)
         {
+            if (await _categoryRepository.CategoryExistsAsync(categoryDto.Name))
+            {
+                throw new InvalidOperationException($"Danh mục '{categoryDto.Name}' đã tồn tại.");
+            }
+
             var category = _mapper.Map<Category>(categoryDto);
             category.CreatedAt = DateTime.Now;
             await AddAsync(category);
+
             return _mapper.Map<CategoryDTO>(category);
         }
+
 
         public async Task<CategoryUpdateDTO> UpdateCategoryAsync(int id, CategoryUpdateDTO categoryDto)
         {
@@ -95,5 +102,22 @@ namespace BussinessLayer.Service.category
 
             return categories;
         }
+
+        public async Task<List<ProductDTO>> GetProductsByCategoryAsync(int categoryId)
+        {
+            if (categoryId <= 0)
+                throw new ArgumentException("Category ID must be greater than 0.", nameof(categoryId));
+
+            var category = await _categoryRepository.GetCategoriesWithProducts()
+                .FirstOrDefaultAsync(c => c.CategoryId == categoryId);
+
+            if (category == null)
+                throw new KeyNotFoundException($"Category with ID {categoryId} not found.");
+
+            return category.Products != null ? _mapper.Map<List<ProductDTO>>(category.Products) : new List<ProductDTO>();
+        }
+
+
+
     }
 }

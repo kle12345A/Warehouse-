@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Rotativa.AspNetCore;
+
 namespace Warehouse.MVC
 {
     public class Program
@@ -12,11 +15,29 @@ namespace Warehouse.MVC
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.IdleTimeout = TimeSpan.FromMinutes(5); // Session h?t h?n sau 5 phút không ho?t ??ng
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+
+
+
+
+            builder.Services
+     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+     .AddCookie(options =>
+     {
+         options.LoginPath = "/Auth";
+         options.AccessDeniedPath = "/Home/AccessDenied";
+         options.ExpireTimeSpan = TimeSpan.FromMinutes(5); // Cookie h?t h?n sau 5 phút
+         options.SlidingExpiration = false; // Không t? ??ng gia h?n cookie
+     });
+
+
+            builder.Services.AddAuthorization();
             var app = builder.Build();
+
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -30,7 +51,7 @@ namespace Warehouse.MVC
             app.UseStaticFiles();
             app.UseSession();
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

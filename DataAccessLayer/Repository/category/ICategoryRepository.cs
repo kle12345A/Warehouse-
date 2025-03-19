@@ -11,5 +11,7 @@ namespace DataAccessLayer.Repository.category
 {
     public interface ICategoryRepository : IBaseRepository<Category>
     {
+        Task<bool> CategoryExistsAsync(string categoryName);
+        IQueryable<Category> GetCategoriesWithProducts();
     }
 }

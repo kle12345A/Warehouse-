@@ -37,15 +37,22 @@ namespace Warehouse.API.Controller
         }
 
         [HttpPost]
-        public async Task<ActionResult<CategoryDTO>> CreateCategory([FromBody] CategoryDTO categoryDto)
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryDTO categoryDto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
+
+            try
+            {
+                var createdCategory = await _categoryService.CreateCategoryAsync(categoryDto);
+                return CreatedAtAction(nameof(GetCategoryById), new { id = createdCategory.CategoryId }, createdCategory);
             }
-            var createdCategory = await _categoryService.CreateCategoryAsync(categoryDto);
-            return CreatedAtAction(nameof(GetCategoryById), new { id = createdCategory.CategoryId }, createdCategory);
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { message = ex.Message }); 
+            }
         }
+
 
         [HttpPut("{id}")]
         public async Task<ActionResult<CategoryUpdateDTO>> UpdateCategory(int id, [FromBody] CategoryUpdateDTO categoryDto)
@@ -86,6 +93,25 @@ namespace Warehouse.API.Controller
                 return StatusCode(500, new { message = $"An error occurred: {ex.Message}" });
             }
         }
+
+        [HttpGet("{id}/products")]
+        public async Task<ActionResult<List<ProductDTO>>> GetProductsByCategory(int id)
+        {
+            try
+            {
+                var products = await _categoryService.GetProductsByCategoryAsync(id);
+                return Ok(products);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(new { message = "Danh mục không tồn tại hoặc không có sản phẩm" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Lỗi hệ thống: {ex.Message}" });
+            }
+        }
+
 
     }
 }

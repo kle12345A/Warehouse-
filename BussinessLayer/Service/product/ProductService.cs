@@ -25,9 +25,10 @@ namespace BussinessLayer.Service.product
 
         public async Task<ProductDTO> CreateProductAsync(ProductDTO productDto)
         {
+           
             var product = _mapper.Map<Product>(productDto);
             product.CreatedAt = DateTime.Now;
-            product.CreatedBy = 1; 
+            //product.CreatedBy = 1; 
             product.AvailableQuantity = 0;
             await AddAsync(product);
             return _mapper.Map<ProductDTO>(product);
@@ -66,8 +67,14 @@ namespace BussinessLayer.Service.product
 
         public async Task<ProductDTO> GetProductByIdAsync(int id)
         {
-            var product = await GetByIdAsync(id);
+            var product = await _productRepository.GetByIdAsync(id);
             return _mapper.Map<ProductDTO>(product);
+        }
+
+        public async Task<ProductDTO?> GetProductByNameAsync(string name)
+        {
+            var product = await _productRepository.GetByNameAsync(name);
+            return product != null ? _mapper.Map<ProductDTO>(product) : null;
         }
 
         public async Task<UpdateProductRequest> UpdateProductAsync(int id, UpdateProductRequest productDto)

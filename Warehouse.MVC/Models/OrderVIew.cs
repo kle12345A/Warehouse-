@@ -14,5 +14,8 @@ namespace Warehouse.MVC.Models
         public List<StatusDTO> StatusList { get; set; }
         public List<CustomerDTO> CustomerDTOs { get; set; }
         public List<OrderTypeEnum> OrderTypeList { get; set; }
+        public int CurrentPage { get; set; }
+        public int TotalPages { get; set; }
+        public int PageSize { get; set; }
     }
 }

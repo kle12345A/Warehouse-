@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using Warehouse.MVC.Models;
 
 namespace Warehouse.MVC.Controllers
 {
+    [Authorize]
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -22,7 +25,10 @@ namespace Warehouse.MVC.Controllers
         {
             return View();
         }
-
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

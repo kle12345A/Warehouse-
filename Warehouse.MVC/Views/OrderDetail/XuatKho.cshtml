@@ -10,8 +10,11 @@
 }
 
 <div class="container-fluid">
-    <div class="container mt-5">
-        <h2>Chi tiết đơn hàng</h2>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Chi tiết đơn(xuất hàng)</h3>
+        </div>
+        <div class="card-body">
         <div class="d-flex justify-content-between mb-3">
             <a asp-action="Create" asp-controller="Order" class="btn btn-primary">Tạo đơn khác</a>
         </div>
@@ -87,7 +90,7 @@
 
                         <div class="row">
                             <div class="col-6">
-                                <strong>Tiền cần trả NCC</strong>
+                                <strong>Tiền thu của khách hàng</strong>
                             </div>
                             <div class="col-6 text-end">
                                 <strong>@totalPrice.ToString("N0") đ</strong>
@@ -121,25 +124,24 @@
                     </div>
                 </div>
             </div>
+            <div  class="d-flex">
+                <a asp-controller="Order" asp-action="XuatKho" type="button" class="btn btn-primary me-3">Back</a>
 
+
+                @if (Model.OrderDetailWithCustomer.OrderStatus == WarehouseDTOs.OrderStatus.Pending)
+                {
+                        <form id="approveForm" asp-controller="OrderDetail" asp-action="ApproveExport" method="post">
+                        <input type="hidden" name="id" value="@Model.OrderDetailWithCustomer.OrderId" />
+                        <button type="submit" class="btn btn-success">Approve</button>
+                    </form>
+                }
+                    <a asp-controller="OrderDetail" asp-action="ExportInvoice" asp-route-id="@Model.OrderDetailWithCustomer.OrderId" class="btn btn-info ms-2">Xuất hóa đơn</a>
+            </div>
         </div>
 
 
     </div>
-    <div style="margin-left: 10%;" class="d-flex">
-        <a asp-controller="Order" asp-action="XuatKho" type="button" class="btn btn-primary me-3">Back</a>
-
-
-        @if (Model.OrderDetailWithCustomer.OrderStatus == WarehouseDTOs.OrderStatus.Pending)
-        {
-            <form id="approveForm" asp-action="ApproveOrder" asp-controller="OrderDetail" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="id" value="@Model.OrderDetailWithSupplier.OrderId" />
-                <button type="submit" class="btn btn-success">Approve</button>
-            </form>
-        }
-
-    </div>
+  
 
 
 

@@ -12,7 +12,7 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Chi tiết đơn</h3>
+            <h3 class="card-title">Chi tiết đơn(nhập hàng)</h3>
         </div>
         <div class="card-body">
         <div class="d-flex justify-content-between mb-3">
@@ -27,6 +27,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
+                                  
                                     <th>Sản phẩm</th>
                                     <th>Số lượng</th>
                                     <th>Đơn giá</th>
@@ -37,7 +38,8 @@
                                  @foreach (var item in Model.OrderDetailWithSupplier.OrderDetails)
                                 {
                                     <tr>
-                                        <td>
+                                        
+                                            <td>
                                             <div class="d-flex align-items-center">
                                                 @if (!string.IsNullOrEmpty(item.Image))
                                                 {
@@ -126,31 +128,29 @@
             </div>
 
         </div>
+            <div style="margin-top: 1%; " class="d-flex">
+                <a asp-controller="Order" asp-action="Index" type="button" class="btn btn-primary me-3">Back</a>
+
+
+                @if (Model.OrderDetailWithSupplier.OrderStatus == WarehouseDTOs.OrderStatus.Pending)
+                {
+                    <form id="approveForm" asp-action="ApproveOrder" asp-controller="OrderDetail" method="post">
+                        <input type="hidden" name="id" value="@Model.OrderDetailWithSupplier.OrderId" />
+                        <button type="submit" class="btn btn-success">Approve</button>
+                    </form>
+                }
+
+            </div>
 
 
         </div>
     </div>
 </div>
-</div>
-    <div style="margin-left: 10%;" class="d-flex">
-        <a asp-controller="Order" asp-action="Index" type="button" class="btn btn-primary me-3">Back</a>
 
-
-        @if (Model.OrderDetailWithSupplier.OrderStatus == WarehouseDTOs.OrderStatus.Pending)
-        {
-            <form id="approveForm" asp-action="ApproveOrder" asp-controller="OrderDetail" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="id" value="@Model.OrderDetailWithSupplier.OrderId" />
-                <button type="submit" class="btn btn-success">Approve</button>
-            </form>
-        }
-       
-    </div>
+  
 
    
 
-   
-</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>

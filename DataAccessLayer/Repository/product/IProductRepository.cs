@@ -11,6 +11,8 @@ namespace DataAccessLayer.Repository.product
 {
     public interface IProductRepository : IBaseRepository<Product>
     {
+        Task<Product?> GetByNameAsync(string name);
+        Task<Product?> GetByIdAsync(int id);
     }
  
 }

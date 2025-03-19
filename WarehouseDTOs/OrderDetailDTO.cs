@@ -37,6 +37,7 @@ namespace WarehouseDTOs
         public string FullName { get; set; }
         public string Phone { get; set; }
         public OrderStatus OrderStatus { get; set; }
+        public OrderTypeEnum OrderTypeEnum { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
         public List<OrderDetailDTO> OrderDetails { get; set; } = new List<OrderDetailDTO>();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Build.Framework;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
@@ -11,6 +12,7 @@ using WarehouseDTOs;
 
 namespace Warehouse.MVC.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
         private string UrlGet = "https://localhost:7200/api/Products";
@@ -20,6 +22,7 @@ namespace Warehouse.MVC.Controllers
         private string UrlUpdate = "https://localhost:7200/api/Products";
         private string UrlReadFile = "https://localhost:7200/api/Products/read-file-product";
         private string UrlCreate2 = "https://localhost:7200/api/Products/create-product";
+        private string UrlGetId = "https://localhost:7200/api/Category";
 
         public async Task<IActionResult> Index(int page = 1, int pageSize = 5, int? categoryId = null, string search = null)
         {
@@ -136,20 +139,38 @@ namespace Warehouse.MVC.Controllers
                 return View(new ProductView { Categories = categories, Product = product });
             }
 
-            using var client = new HttpClient();
-            var content = BuildFormData(product, images);
-
-            var response = await client.PostAsync(UrlCreate, content);
-
-            if (response.IsSuccessStatusCode)
+            var userId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int parsedUserId))
             {
-                TempData["SuccessMessage"] = "Tạo sản phẩm thành công!";
-                return RedirectToAction("Index");
+                TempData["ErrorMessage"] = "Bạn cần đăng nhập trước khi tạo sản phẩm!";
+                return RedirectToAction("Login", "Account");
             }
 
-            var errorMessage = await response.Content.ReadAsStringAsync();
-            ModelState.AddModelError("", $"Lỗi khi tạo sản phẩm: {errorMessage}");
-            return View(new ProductView { Categories = categories, Product = product });
+            product.CreatedBy = parsedUserId;
+
+            try
+            {
+                using var client = new HttpClient();
+                var content = BuildFormData(product, images);
+                var response = await client.PostAsync(UrlCreate, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["SuccessMessage"] = "Tạo sản phẩm thành công!";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    TempData["ErrorMessage"] = $"Lỗi từ API: {errorMessage}";
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Lỗi nội bộ: {ex.Message}";
+                return RedirectToAction("Index");
+            }
         }
 
         [HttpPost]
@@ -172,6 +193,7 @@ namespace Warehouse.MVC.Controllers
                 content.Add(new StringContent(model.CostPrice.ToString()), "CostPrice");
                 content.Add(new StringContent(model.CategoryId?.ToString() ?? ""), "CategoryId");
                 content.Add(new StringContent(model.Images ?? ""), "Images");
+
 
                 if (model.ImageFile != null && model.ImageFile.Length > 0)
                 {
@@ -322,7 +344,36 @@ namespace Warehouse.MVC.Controllers
             }
         }
 
+
+        public async Task<IActionResult> Details(int id, int categoryId)
+        {
+            var cate = await GetProductsByCategoryAsync(categoryId);
+            var pro = await GetProductByIdAsync(id);
+            var view = new ProductView
+            {
+                Products = cate,
+                Product = pro
+            };
+            return View(view);
+        }
+
         //=======================================================================
+
+        private async Task<List<ProductDTO>> GetProductsByCategoryAsync(int categoryId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                using (HttpResponseMessage res = await client.GetAsync($"{UrlGetId}/{categoryId}/products"))
+                {
+                    if (res.IsSuccessStatusCode)
+                    {
+                        string data = await res.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<List<ProductDTO>>(data);
+                    }
+                }
+            }
+            return new List<ProductDTO>();
+        }
         private async Task<ProductDTO> GetProductByIdAsync(int id)
         {
             using (HttpClient client = new HttpClient())
@@ -393,7 +444,8 @@ namespace Warehouse.MVC.Controllers
         { new StringContent(product.AvailableQuantity?.ToString() ?? ""), "AvailableQuantity" },
         { new StringContent(product.Price.ToString()), "Price" },
         { new StringContent(product.CostPrice.ToString()), "CostPrice" },
-        { new StringContent(product.CategoryId?.ToString() ?? ""), "CategoryId" }
+        { new StringContent(product.CategoryId?.ToString() ?? ""), "CategoryId" },
+        { new StringContent(product.CreatedBy.ToString() ?? ""), "CreatedBy" }
     };
 
             if (image != null && image.Length > 0)

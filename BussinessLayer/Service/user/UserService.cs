@@ -93,10 +93,9 @@ namespace BussinessLayer.Service.user
             }
 
             var user = await _userRepository.GetQuery()
-     .FirstOrDefaultAsync(u =>
-         ( u.Email == userLogin.EmailAddress)
-         && u.Password == userLogin.Password);
-
+      .FirstOrDefaultAsync(u =>
+          u.Email == userLogin.EmailAddress &&
+          u.Password == userLogin.Password);
 
             if (user != null)
             {
@@ -105,9 +104,12 @@ namespace BussinessLayer.Service.user
                     UserId = user.UserId,
                     UserName = user.Username,
                     EmailAddress = user.Email,
-                    RoleId = user.Role,
+                    RoleId = (int)user.Role,
+                     RoleName = Enum.GetName(typeof(RoleUser), user.Role)
+
                 };
             }
+
 
             return null;
         }

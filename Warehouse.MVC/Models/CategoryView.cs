@@ -6,5 +6,6 @@ namespace Warehouse.MVC.Models
     {
         public List<CategoryProduct> Categories { get; set; }
         public CategoryDTO Category { get; set; }
+        public List<ProductDTO> Products { get; set; }
     }
 }

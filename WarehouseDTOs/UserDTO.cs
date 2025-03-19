@@ -39,6 +39,7 @@ namespace WarehouseDTOs
         public string EmailAddress { get; set; }
         public string UserName { get; set; }
         public int? RoleId { get; set; }
+        public string RoleName { get; set; }
     }
     public enum RoleUser
     {

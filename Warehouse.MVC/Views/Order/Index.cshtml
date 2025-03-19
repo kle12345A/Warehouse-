@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Danh sách đơn hàng (Nhập kho)</h3>
+            <h3 class="card-title">Danh sách đơn hàng (Nhập hàng)</h3>
         </div>
         <div class="card-body">
             <!-- Form lọc -->
@@ -93,7 +93,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th><input type="checkbox" id="selectAll"></th>
+                           
                             <th>Mã đơn hàng</th>
                             <th>NCC</th>
                             <th>Kiểu đơn</th>
@@ -108,7 +108,7 @@
                             @foreach (var order in Model.OrderListDTO)
                             {
                                 <tr>
-                                    <td><input type="checkbox" name="selectedOrders" value="@order.OrderId" class="orderCheckbox"></td>
+                                    
                                     <td>
                                         <a asp-controller="Order" asp-action="Update" asp-route-id="@order.OrderId" class="order-link">
                                             INV @order.OrderId

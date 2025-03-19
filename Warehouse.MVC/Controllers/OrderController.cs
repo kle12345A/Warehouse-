@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 using Warehouse.MVC.Helpers;
@@ -7,6 +8,8 @@ using WarehouseDTOs;
 
 namespace Warehouse.MVC.Controllers
 {
+    [Authorize]
+
     public class OrderController : Controller
     {
         private string UrlGet = "https://localhost:7200/api/Order";
@@ -18,7 +21,7 @@ namespace Warehouse.MVC.Controllers
             var orders = await GetOrderAsync();
             var filteredOrders = orders?.Where(o => o.OrderType == OrderTypeEnum.NhapKho).ToList() ?? new List<OrderListDTO>();
 
-            
+            // Tìm kiếm
             if (!string.IsNullOrEmpty(search))
             {
                 filteredOrders = filteredOrders
@@ -26,10 +29,14 @@ namespace Warehouse.MVC.Controllers
                                 (o.SupplierName?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false))
                     .ToList();
             }
+
+            // Lọc theo trạng thái
             if (status.HasValue)
             {
                 filteredOrders = filteredOrders.Where(o => (int?)o.Status == status).ToList();
             }
+
+            // Lọc theo ngày
             if (!string.IsNullOrEmpty(dateFilter))
             {
                 switch (dateFilter.ToLower())
@@ -46,61 +53,17 @@ namespace Warehouse.MVC.Controllers
                 }
             }
 
+            // **Sắp xếp theo OrderId giảm dần (mới nhất trước)**
+            filteredOrders = filteredOrders.OrderByDescending(o => o.OrderId).ToList();
+
+            // Phân trang
             int totalItems = filteredOrders.Count;
             int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
             var pagedData = filteredOrders.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
             ViewBag.Page = page;
             ViewBag.TotalPages = totalPages;
-            ViewBag.Status = status; 
-            ViewBag.DateFilter = dateFilter; 
-            ViewBag.Search = search; 
-
-            var view = new OrderVIew
-            {
-                OrderListDTO = pagedData
-            };
-            return View(view);
-        }
-        public async Task<IActionResult> XuatKho(int page = 1, int pageSize = 5, int? status = null, string dateFilter = null, string search = null)
-        {
-            var orders = await GetOrderAsync();
-            var filteredOrders = orders?.Where(o => o.OrderType == OrderTypeEnum.XuatKho).ToList() ?? new List<OrderListDTO>();
-
-            if (!string.IsNullOrEmpty(search))
-            {
-                filteredOrders = filteredOrders
-                    .Where(o => o.OrderId.ToString().Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                                (o.Customer?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false))
-                    .ToList();
-            }
-            if (status.HasValue)
-            {
-                filteredOrders = filteredOrders.Where(o => (int?)o.Status == status).ToList();
-            }
-            if (!string.IsNullOrEmpty(dateFilter))
-            {
-                switch (dateFilter.ToLower())
-                {
-                    case "hôm nay":
-                        filteredOrders = filteredOrders.Where(o => o.OrderDate.HasValue && o.OrderDate.Value.Date == DateTime.Today).ToList();
-                        break;
-                    case "7 ngày qua":
-                        filteredOrders = filteredOrders.Where(o => o.OrderDate.HasValue && o.OrderDate.Value.Date >= DateTime.Today.AddDays(-7)).ToList();
-                        break;
-                    case "tháng này":
-                        filteredOrders = filteredOrders.Where(o => o.OrderDate.HasValue && o.OrderDate.Value.Month == DateTime.Today.Month && o.OrderDate.Value.Year == DateTime.Today.Year).ToList();
-                        break;
-                }
-            }
-
-            int totalItems = filteredOrders.Count;
-            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-            var pagedData = filteredOrders.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-
-            ViewBag.Page = page;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.Status = status; 
+            ViewBag.Status = status;
             ViewBag.DateFilter = dateFilter;
             ViewBag.Search = search;
 
@@ -108,8 +71,69 @@ namespace Warehouse.MVC.Controllers
             {
                 OrderListDTO = pagedData
             };
+
             return View(view);
         }
+
+        public async Task<IActionResult> XuatKho(int page = 1, int pageSize = 5, int? status = null, string dateFilter = null, string search = null)
+        {
+            var orders = await GetOrderAsync();
+            var filteredOrders = orders?.Where(o => o.OrderType == OrderTypeEnum.XuatKho).ToList() ?? new List<OrderListDTO>();
+
+            // Tìm kiếm
+            if (!string.IsNullOrEmpty(search))
+            {
+                filteredOrders = filteredOrders
+                    .Where(o => o.OrderId.ToString().Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                                (o.Customer?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false))
+                    .ToList();
+            }
+
+            // Lọc theo trạng thái
+            if (status.HasValue)
+            {
+                filteredOrders = filteredOrders.Where(o => (int?)o.Status == status).ToList();
+            }
+
+            // Lọc theo ngày
+            if (!string.IsNullOrEmpty(dateFilter))
+            {
+                switch (dateFilter.ToLower())
+                {
+                    case "hôm nay":
+                        filteredOrders = filteredOrders.Where(o => o.OrderDate.HasValue && o.OrderDate.Value.Date == DateTime.Today).ToList();
+                        break;
+                    case "7 ngày qua":
+                        filteredOrders = filteredOrders.Where(o => o.OrderDate.HasValue && o.OrderDate.Value.Date >= DateTime.Today.AddDays(-7)).ToList();
+                        break;
+                    case "tháng này":
+                        filteredOrders = filteredOrders.Where(o => o.OrderDate.HasValue && o.OrderDate.Value.Month == DateTime.Today.Month && o.OrderDate.Value.Year == DateTime.Today.Year).ToList();
+                        break;
+                }
+            }
+
+           
+            filteredOrders = filteredOrders.OrderByDescending(o => o.OrderId).ToList();
+
+            // Phân trang
+            int totalItems = filteredOrders.Count;
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            var pagedData = filteredOrders.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            ViewBag.Page = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.Status = status;
+            ViewBag.DateFilter = dateFilter;
+            ViewBag.Search = search;
+
+            var view = new OrderVIew
+            {
+                OrderListDTO = pagedData
+            };
+
+            return View(view);
+        }
+
 
         public async Task<IActionResult> Update(int id)
         {
@@ -160,6 +184,47 @@ namespace Warehouse.MVC.Controllers
                 CartItems = cartItems
             };
             return View(view);
+        }
+
+        public async Task<IActionResult> CreateExportWare(int page = 1, int pageSize = 5)
+        {
+            var sup = await GetSupplierAsync();
+            var pro = await GetProductAsync();
+            var cus = await GetCustomerAsync();
+            var cartItems = HttpContext.Session.GetObjectFromJson<List<CartItemDTO>>("CartItems") ?? new List<CartItemDTO>();
+
+            int totalItems = pro.Count;
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            var pagedProducts = pro.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            var view = new OrderVIew()
+            {
+                CustomerDTOs = cus,
+                Products = pagedProducts,
+                Suppliers = sup,
+                CartItems = cartItems,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                PageSize = pageSize
+            };
+            return View(view);
+        }
+
+        public async Task<IActionResult> GetProductList(int page = 1, int pageSize = 5)
+        {
+            var pro = await GetProductAsync();
+            int totalItems = pro.Count;
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            var pagedProducts = pro.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            var view = new OrderVIew()
+            {
+                Products = pagedProducts,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                PageSize = pageSize
+            };
+            return PartialView("_ProductList", view);
         }
 
 

@@ -1,11 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Rotativa;
+using Rotativa.AspNetCore;
 using System.Text;
 using Warehouse.MVC.Models;
 using WarehouseDTOs;
 
 namespace Warehouse.MVC.Controllers
 {
+    [Authorize]
+
     public class OrderDetailController : Controller
     {
         private string Url = "https://localhost:7200/api/OrderDetail";
@@ -32,13 +37,12 @@ namespace Warehouse.MVC.Controllers
             return View(view);
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApproveOrder([FromForm] int id)
         {
             using (HttpClient client = new HttpClient())
             {
-                // Lấy thông tin đơn hàng để kiểm tra OrderType
-                var orderDetailsUrl = $"{Url}/{id}"; // Hoặc sử dụng UrlOrderC nếu phù hợp
+
+                var orderDetailsUrl = $"{Url}/{id}";
                 using (HttpResponseMessage getResponse = await client.GetAsync(orderDetailsUrl))
                 {
                     if (!getResponse.IsSuccessStatusCode)
@@ -48,7 +52,7 @@ namespace Warehouse.MVC.Controllers
                     }
 
                     string orderData = await getResponse.Content.ReadAsStringAsync();
-                    var order = JsonConvert.DeserializeObject<OrderDetailWithSupplierDTO>(orderData); // Hoặc OrderDetailWithCustomerDTO
+                    var order = JsonConvert.DeserializeObject<OrderDetailWithSupplierDTO>(orderData);
 
                     if (order == null || order.OrderTypeEnum == null)
                     {
@@ -56,7 +60,6 @@ namespace Warehouse.MVC.Controllers
                         return RedirectToAction("Index", "Order");
                     }
 
-                    // Tạo dữ liệu để gửi lên API phê duyệt
                     var requestBody = new OrderUpdateStatusDTO
                     {
                         OrderId = id,
@@ -65,35 +68,104 @@ namespace Warehouse.MVC.Controllers
 
                     var jsonContent = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
 
-                    // Gọi API PATCH để phê duyệt
                     using (HttpResponseMessage res = await client.PatchAsync($"{UrlOrder}/{id}/status", jsonContent))
                     {
                         if (res.IsSuccessStatusCode)
                         {
                             TempData["SuccessMessage"] = "Phê duyệt đơn hàng thành công!";
-                            // Chuyển hướng dựa trên OrderType
-                            if (order.OrderTypeEnum == OrderTypeEnum.NhapKho) // 1
-                            {
-                                return RedirectToAction("Index", "Order");
-                            }
-                            else if (order.OrderTypeEnum == OrderTypeEnum.XuatKho) // 2
-                            {
-                                return RedirectToAction("XuatKho", "OrderDetail", new { id });
-                            }
-                            else
-                            {
-                                return RedirectToAction("Index", "Order"); // Default
-                            }
+                            return RedirectToAction("Index", "Order");
                         }
                         else
                         {
                             var errorContent = await res.Content.ReadAsStringAsync();
                             TempData["ErrorMessage"] = "Phê duyệt đơn hàng thất bại: " + errorContent;
-                            return RedirectToAction("Index", "Order", new { id });
+                            return RedirectToAction("Index", "Order");
                         }
+
+
                     }
                 }
             }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ApproveExport([FromForm] int id)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+
+                var orderDetailsUrl = $"{UrlOrderC}/{id}";
+                using (HttpResponseMessage getResponse = await client.GetAsync(orderDetailsUrl))
+                {
+                    if (!getResponse.IsSuccessStatusCode)
+                    {
+                        TempData["ErrorMessage"] = "Không thể lấy thông tin đơn hàng.";
+                        return RedirectToAction("XuatKho", "Order");
+                    }
+
+                    string orderData = await getResponse.Content.ReadAsStringAsync();
+                    var order = JsonConvert.DeserializeObject<OrderDetailWithCustomerDTO>(orderData);
+
+                    if (order == null || order.OrderTypeEnum == null)
+                    {
+                        TempData["ErrorMessage"] = "Thông tin đơn hàng không hợp lệ.";
+                        return RedirectToAction("XuatKho", "Order");
+                    }
+
+                    var requestBody = new OrderUpdateStatusDTO
+                    {
+                        OrderId = id,
+                        Status = (int)OrderStatus.Approved
+                    };
+
+                    var jsonContent = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
+
+                    using (HttpResponseMessage res = await client.PatchAsync($"{UrlOrder}/{id}/status", jsonContent))
+                    {
+                        if (res.IsSuccessStatusCode)
+                        {
+                            TempData["SuccessMessage"] = "Phê duyệt đơn hàng thành công!";
+                            return RedirectToAction("XuatKho", "Order");
+                        }
+                        else
+                        {
+                            var errorContent = await res.Content.ReadAsStringAsync();
+                            TempData["ErrorMessage"] = "Phê duyệt đơn hàng thất bại: " + errorContent;
+                            return RedirectToAction("XuatKho", "Order");
+                        }
+
+
+                    }
+                }
+            }
+        }
+
+        public async Task<IActionResult> ExportInvoice(int id)
+        {
+            // Lấy thông tin đơn hàng từ API
+            var order = await GetOrderByIdWithCusAsync(id);
+
+            if (order == null || order.OrderDetails == null)
+            {
+                TempData["ErrorMessage"] = "Không thể lấy thông tin đơn hàng để xuất hóa đơn.";
+                return RedirectToAction("XuatKho", new { id });
+            }
+
+            // Tạo view model để truyền vào view PDF
+            var viewModel = new OrderDetailView
+            {
+                OrderDetailWithCustomer = order
+            };
+
+            // Tạo PDF từ view
+            var pdf = new ViewAsPdf("ExportInvoice", viewModel)
+            {
+                FileName = $"HoaDon_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf",
+                PageSize = Rotativa.AspNetCore.Options.Size.A4,
+                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait
+            };
+
+            // Trả về IActionResult
+            return pdf;
         }
 
 

@@ -1,0 +1,127 @@
+﻿@model Warehouse.MVC.Models.ProductView
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Chi Tiết Sản Phẩm</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <img src="@Model.Product.Images" alt="@Model.Product.Name" class="img-fluid product-detail-image">
+                </div>
+                <div class="col-md-6">
+                    <h3 class="card-title">@Model.Product.Name</h3>
+                    <p>Mô tả: @Model.Product.Description</p>
+                    <p>Giá: @Model.Product.Price VND</p>
+                    <p>Số lượng sẵn có: @Model.Product.AvailableQuantity</p>
+                    <p>Loại sản phẩm: @Model.Product.CategoryName</p>
+                    <p>Ngày tạo: @Model.Product.CreatedAt.ToString("dd/MM/yyyy")</p>
+                    <a asp-controller="Product" asp-action="Update" asp-route-id="@Model.Product.ProductId" class="btn btn-primary">Cập nhật</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Danh sách sản phẩm tương tự -->
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Danh sách sản phẩm tương tự</h3>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Số lượng sẵn có</th>
+                        <th>Ngày khởi tạo</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model.Products)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="Product" asp-action="Update" asp-route-id="@product.ProductId" class="product-link">
+                                    @if (!string.IsNullOrEmpty(product.Images))
+                                    {
+                                        <img src="@product.Images" alt="@product.Name" class="product-image">
+                                    }
+                                    else
+                                    {
+                                        <img src="https://via.placeholder.com/40" alt="No image" class="product-image">
+                                    }
+                                    @product.Name
+                                </a>
+                            </td>
+                            <td>@product.AvailableQuantity</td>
+                            <td>@product.CreatedAt.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ProductId" asp-route-categoryId="@product.CategoryId" class="btn btn-primary">Chi tiết</a>
+
+                            </td>
+
+
+                        </tr>
+                    }
+
+                </tbody>
+
+        </div>
+    </div>
+</div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/product-index.css" />
+}
+<style>
+    /* Card sản phẩm */
+    .product-card {
+        margin-top: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden; /* Đảm bảo nội dung không vượt ra ngoài card */
+    }
+
+        /* Hình ảnh trong card */
+        .product-card .product-image {
+            width: 100%; /* Chiều rộng đầy đủ của card */
+            height: 180px; /* Đặt chiều cao cố định cho hình ảnh */
+            object-fit: cover; /* Giữ tỷ lệ hình ảnh và cắt phần dư để vừa khung */
+        }
+
+    /* Hình ảnh chi tiết sản phẩm */
+    .product-detail-image {
+        width: 100%; /* Chiều rộng đầy đủ */
+        height: auto; /* Tự động điều chỉnh chiều cao theo tỷ lệ */
+        border-radius: 10px;
+    }
+
+    /* Nội dung trong card */
+    .product-card .card-body {
+        padding: 15px;
+        text-align: center; /* Căn giữa nội dung bên trong card */
+    }
+
+    /* Tiêu đề sản phẩm */
+    .card-title {
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+    /* Giá sản phẩm */
+    .card-text {
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    /* Nút "Chi tiết" */
+ 
+</style>

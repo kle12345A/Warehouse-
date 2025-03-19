@@ -17,6 +17,7 @@ namespace BussinessLayer.Service.category
         Task<CategoryUpdateDTO> UpdateCategoryAsync(int id, CategoryUpdateDTO categoryDto);
         Task<bool> DeleteCategoryAsync(int id);
         Task<List<CategoryProduct>> GetAllCategoriesProduct();
+        Task<List<ProductDTO>> GetProductsByCategoryAsync(int categoryId);
 
 
     }

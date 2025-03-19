@@ -25,14 +25,13 @@
             </form>
             <div class="d-flex justify-content-between mb-3">
                 <a asp-controller="Customer" asp-action="Create" class="btn btn-primary">Thêm khách hàng</a>
-                <button id="deleteSelectedBtn" class="btn btn-danger" style="display: none;" onclick="deleteSelectedCustomers()">Xóa</button>
             </div>
 
             <form id="deleteForm" data-delete-url="@Url.Action("DeleteMultiple", "Customer")">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th><input type="checkbox" id="selectAll"></th>
+                            
                             <th>Tên</th>
                             <th>SĐT</th>
                             <th>Email</th>
@@ -45,9 +44,7 @@
                             @foreach (var cus in Model.Customers)
                             {
                                 <tr>
-                                    <td>
-                                        <input type="checkbox" name="selectedCustomers" value="@cus.CustomerId" class="customerCheckbox">
-                                    </td>
+                                    
                                     <td>
                                         <a style="text-decoration:none;" asp-controller="Customer" asp-action="Update" asp-route-id="@cus.CustomerId" class="product-link">
                                             @cus.FullName

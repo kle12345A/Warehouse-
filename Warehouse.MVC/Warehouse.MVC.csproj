@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+	  <PackageReference Include="Rotativa.AspNetCore" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>

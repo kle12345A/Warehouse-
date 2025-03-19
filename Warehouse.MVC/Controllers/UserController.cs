@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 using Warehouse.MVC.Models;
@@ -6,6 +7,8 @@ using WarehouseDTOs;
 
 namespace Warehouse.MVC.Controllers
 {
+    [Authorize(Roles = "Admin")]
+
     public class UserController : Controller
     {
         private string UrlGet = "https://localhost:7200/api/User";
@@ -33,7 +36,7 @@ namespace Warehouse.MVC.Controllers
 
             ViewBag.Page = page;
             ViewBag.TotalPages = totalPages;
-            ViewBag.Search = search; // Lưu trạng thái tìm kiếm
+            ViewBag.Search = search;
 
             var view = new UserView
             {

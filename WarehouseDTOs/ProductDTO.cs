@@ -22,7 +22,6 @@ namespace WarehouseDTOs
         public string? Unit { get; set; }
 
        
-
         public int? AvailableQuantity { get; set; }
         public string? CategoryName { get; set; }
 
@@ -49,7 +48,7 @@ namespace WarehouseDTOs
         public decimal Price { get; set; }
         public decimal CostPrice { get; set; }
         public int? CategoryId { get; set; }
-       
+        public int CreatedBy { get; set; }
         public IFormFile? ImageFile { get; set; } // File ảnh
     }
     public class CreateProductRequest2
@@ -61,7 +60,7 @@ namespace WarehouseDTOs
         public decimal Price { get; set; }
         public decimal CostPrice { get; set; }
         public int? CategoryId { get; set; }
-
+        public int CreatedBy { get; set; }
        public string? Images {  get; set; }
     }
     public class UpdateProductRequest

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 using Warehouse.MVC.Models;
@@ -6,6 +7,8 @@ using WarehouseDTOs;
 
 namespace Warehouse.MVC.Controllers
 {
+    [Authorize]
+
     public class CustomerController : Controller
     {
         private readonly string url = "https://localhost:7200/api/Customer";

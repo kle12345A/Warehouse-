@@ -1,0 +1,58 @@
+﻿@model Warehouse.MVC.Models.OrderDetailView
+
+@{
+    ViewData["Title"] = "Hóa đơn";
+}
+
+<div class="container">
+    <h2 style="text-align: center;">HÓA ĐƠN BÁN HÀNG</h2>
+    <h4 style="text-align: center;">Chi tiết đơn (Xuất hàng)</h4>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <h5>Thông tin khách hàng</h5>
+            <p><strong>Tên khách hàng:</strong> @Model.OrderDetailWithCustomer.FullName</p>
+            <p><strong>Số điện thoại:</strong> @Model.OrderDetailWithCustomer.Phone</p>
+            <p><strong>Email:</strong> @Model.OrderDetailWithCustomer.Email</p>
+            <p><strong>Địa chỉ:</strong> @Model.OrderDetailWithCustomer.Address</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>Mã đơn hàng:</strong> @Model.OrderDetailWithCustomer.OrderId</p>
+            <p><strong>Ngày tạo:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")</p>
+        </div>
+    </div>
+
+    <table class="table" style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 1px solid #000;">
+                <th style="border-bottom: 1px solid #000;">Sản phẩm</th>
+                <th style="border-bottom: 1px solid #000;">Số lượng</th>
+                <th style="border-bottom: 1px solid #000;">Đơn giá</th>
+                <th style="border-bottom: 1px solid #000;">Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderDetailWithCustomer.OrderDetails)
+            {
+                <tr>
+                    <td>@item.ProductName</td>
+                    <td>@item.Quantity</td>
+                    <td>@String.Format("{0:N0} đ", item.UnitPrice)</td>
+                    <td>@String.Format("{0:N0} đ", item.TotalPrice)</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3"><strong>Tổng tiền</strong></td>
+                <td><strong>@Model.OrderDetailWithCustomer.OrderDetails.Sum(x => x.TotalPrice).ToString("N0") đ</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div style="margin-top: 20px;">
+        <p><strong>Chiết khấu đơn:</strong> 0 đ</p>
+        <p><strong>Tiền thu của khách hàng:</strong> @Model.OrderDetailWithCustomer.OrderDetails.Sum(x => x.TotalPrice).ToString("N0") đ</p>
+    </div>
+</div>

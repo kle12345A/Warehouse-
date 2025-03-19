@@ -67,7 +67,11 @@ namespace Warehouse.API.Controller
         public async Task<ActionResult<ProductDTO>> CreateProduct([FromForm] CreateProductRequest request)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-
+            var existingProduct = await _productService.GetProductByNameAsync(request.Name);
+            if (existingProduct != null)
+            {
+                return BadRequest(new { message = "sản phẩm đã tồn tại." });
+            }
             var productDto = new ProductDTO
             {
                 Name = request.Name,
@@ -76,10 +80,11 @@ namespace Warehouse.API.Controller
                 AvailableQuantity = request.AvailableQuantity,
                 Price = request.Price,
                 CostPrice = request.CostPrice,
-                CategoryId = request.CategoryId
-                
+                CategoryId = request.CategoryId,
+                CreatedBy = request.CreatedBy
             };
-
+            
+            
             if (request.ImageFile != null && request.ImageFile.Length > 0)
             {
                 try

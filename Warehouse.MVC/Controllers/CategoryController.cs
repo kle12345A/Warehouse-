@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 using Warehouse.MVC.Models;
@@ -6,6 +7,8 @@ using WarehouseDTOs;
 
 namespace Warehouse.MVC.Controllers
 {
+    [Authorize]
+
     public class CategoryController : Controller
     {
         private string UrlGet = "https://localhost:7200/api/Category/WithProductCount";
@@ -42,8 +45,11 @@ namespace Warehouse.MVC.Controllers
         public async Task<IActionResult> Update(int id)
         {
             var cat = await GetCategoryByIdAsync(id);
-             var view = new CategoryView
+            var prodwc = await GetProductsByCategoryAsync(id);
+            var view = new CategoryView
             {
+                Products = prodwc,
+
                 Category = cat
             };
             return View(view);
@@ -93,11 +99,17 @@ namespace Warehouse.MVC.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
+                    TempData["SuccessMessage"] = "Tạo danh mục thành công!!";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Danh mục đã tồn tại vu lòng thử lại!";
                     return RedirectToAction("Index");
                 }
             }
 
-            return RedirectToAction("Index");
+            
         }
         private async Task<CategoryDTO> GetCategoryByIdAsync(int id)
         {
@@ -130,5 +142,21 @@ namespace Warehouse.MVC.Controllers
             }
             return new List<CategoryProduct>();
         }
+        private async Task<List<ProductDTO>> GetProductsByCategoryAsync(int categoryId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                using (HttpResponseMessage res = await client.GetAsync($"{UrlGetId}/{categoryId}/products"))
+                {
+                    if (res.IsSuccessStatusCode)
+                    {
+                        string data = await res.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<List<ProductDTO>>(data);
+                    }
+                }
+            }
+            return new List<ProductDTO>();
+        }
+
     }
 }

@@ -60,6 +60,7 @@
                             <th>Số lượng sẵn có</th>
                             <th>Loại</th>
                             <th>Ngày khởi tạo</th>
+                            <th>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,7 +69,7 @@
                             <tr>
                                     <td><input type="checkbox" name="selectedProducts" value="@product.ProductId" class="productCheckbox"></td>
                                 <td>
-                                    <a asp-controller="Product" asp-action="Update" asp-route-id="@product.ProductId" class="product-link">
+                                    <a asp-controller="Product" asp-action="Update" asp-route-id="@product.ProductId"  class="product-link">
                                         @if (!string.IsNullOrEmpty(product.Images))
                                         {
                                             <img src="@product.Images" alt="@product.Name" class="product-image">
@@ -83,6 +84,12 @@
                                 <td>@product.AvailableQuantity</td>
                                 <td>@product.CategoryName</td>
                                 <td>@product.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@product.ProductId" asp-route-categoryId="@product.CategoryId" class="btn btn-primary">Chi tiết</a>
+
+                            </td>
+
+                            
                             </tr>
                         }
 

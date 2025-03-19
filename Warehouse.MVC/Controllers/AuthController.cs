@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Text;
 using WarehouseDTOs;
 
@@ -19,8 +23,6 @@ namespace Warehouse.MVC.Controllers
         }
         public async Task<IActionResult> Login(UserLogin userLogin)
         {
-            
-
             string json = JsonConvert.SerializeObject(userLogin);
             using (HttpClient client = new HttpClient())
             {
@@ -33,8 +35,24 @@ namespace Warehouse.MVC.Controllers
                 {
                     var userInfo = JsonConvert.DeserializeObject<UserInfoDTO>(responseContent);
 
+                    var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Name, userInfo.UserName),
+                            new Claim(ClaimTypes.Email, userInfo.EmailAddress),
+                            new Claim(ClaimTypes.Role, userInfo.RoleName) 
+                        };
+
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var authProperties = new AuthenticationProperties
+                    {
+                        IsPersistent = false,
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(5)
+                    };
+
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+
                     HttpContext.Session.SetString("UserId", userInfo.UserId.ToString());
-                    HttpContext.Session.SetString("UserName", userInfo.UserName.ToString());
+                    HttpContext.Session.SetString("UserName", userInfo.UserName);
                     HttpContext.Session.SetString("EmailAddress", userInfo.EmailAddress);
                     HttpContext.Session.SetString("RoleId", userInfo.RoleId.ToString());
 
@@ -47,7 +65,5 @@ namespace Warehouse.MVC.Controllers
                 }
             }
         }
-
-
     }
 }

@@ -47,7 +47,7 @@
 
                                     <td>@item.Price.ToString("N0") đ</td>
                                     <td>@item.Quantity</td>
-                                    <td>@(item.Price * item.Quantity)đ</td>
+                                        <td>@String.Format("{0:N0} đ", item.Price * item.Quantity)</td>
                                     <td>
                                         <a asp-controller="Order" asp-action="RemoveFromCart" asp-route-id="@item.ProductId" class="btn btn-danger btn-sm">Xóa</a>
                                     </td>
@@ -57,7 +57,7 @@
                         <tfoot>
                             <tr>
                                 <td colspan="5" class="text-end"><strong>Tổng tiền:</strong></td>
-                                <td><strong>@(Model.CartItems?.Sum(x => x.Price * x.Quantity) ?? 0)đ</strong></td>
+                                    <td><strong>@String.Format("{0:N0} đ", Model.CartItems?.Sum(x => x.Price * x.Quantity) ?? 0)</strong></td>
                                 <td></td>
                             </tr>
                         </tfoot>
@@ -72,16 +72,16 @@
                     <div class="mb-3">
                         <label class="form-label">Kiểu đơn hàng *</label>
                         <select class="form-select" name="OrderType" id="orderType" required>
-                            <option value="">-- Chọn kiểu đơn hàng --</option>
+                          
                             <option value="1">Nhập kho</option>
-                            <option value="2">Xuất kho</option>
+                           
                         </select>
                     </div>
 
                     <!-- Nhà cung cấp (hiển thị khi là đơn nhập kho) -->
-                    <div class="mb-3" id="supplierSection">
+                    <div class="mb-3" >
                         <label class="form-label">Nhà cung cấp *</label>
-                        <select class="form-select" name="SupplierId" id="supplierSelect">
+                        <select class="form-select" name="SupplierId">
                             <option value="">-- Chọn nhà cung cấp --</option>
                             @foreach (var supplier in Model.Suppliers)
                             {
@@ -90,17 +90,7 @@
                         </select>
                     </div>
 
-                    <!-- Khách hàng (hiển thị khi là đơn xuất kho) -->
-                    <div class="mb-3" id="customerSection" style="display: none;">
-                        <label class="form-label">Khách hàng *</label>
-                        <select class="form-select" name="CustomerId" id="customerSelect">
-                            <option value="">-- Chọn khách hàng --</option>
-                            @foreach (var customer in Model.CustomerDTOs    )
-                            {
-                                <option value="@customer.CustomerId">@customer.FullName</option>
-                            } 
-                        </select>
-                    </div>
+                   
                     
                     <div class="mb-3">
                         <label class="form-label">Ngày đặt hàng *</label>
@@ -156,6 +146,7 @@
                                     <td>
                                         <input type="number" name="SelectedProducts[@product.ProductId].Quantity" class="form-control product-quantity" min="1" value="1" required>
                                     </td>
+                                    
                                 </tr>
                             }
                         </tbody>
@@ -184,30 +175,7 @@
     <!-- Tham chiếu file JS riêng -->
     <script src="~/js/create-order.js"></script>
     <script>
-        $(document).ready(function () {
-            // Ẩn/hiện các ô dựa trên OrderType
-            function updateFormSections() {
-                var orderType = $('#orderType').val();
-                if (orderType == "1") { // Nhập kho
-                    $('#supplierSection').show();
-                    $('#supplierSelect').prop('required', true);
-                    $('#customerSection').hide();
-                    $('#customerSelect').prop('required', false);
-                  
-                } else if (orderType == "2") { // Xuất kho
-                    $('#supplierSection').hide();
-                    $('#supplierSelect').prop('required', false);
-                    $('#customerSection').show();
-                    $('#customerSelect').prop('required', true);
-                   
-                } else {
-                    $('#supplierSection').hide();
-                    $('#customerSection').hide();
-              
-                    $('#supplierSelect').prop('required', false);
-                    $('#customerSelect').prop('required', false);
-                }
-            }
+      
 
             // Gọi hàm khi load trang
             updateFormSections();

@@ -43,9 +43,7 @@
                             @foreach (var supplier in Model.Suppliers)
                             {
                                 <tr>
-                                    <td>
-                                        <input type="checkbox" name="selectedSuppliers" value="@supplier.SupplierId" class="supplierCheckbox">
-                                    </td>
+                                    
                                     <td>
                                         <a style="text-decoration:none;" asp-controller="Supplier" asp-action="Update" asp-route-id="@supplier.SupplierId" class="product-link">
                                             @supplier.Name
