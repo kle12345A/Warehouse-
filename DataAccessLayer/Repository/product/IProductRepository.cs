@@ -11,8 +11,10 @@ namespace DataAccessLayer.Repository.product
 {
     public interface IProductRepository : IBaseRepository<Product>
     {
+        Task<bool> ProductExistsByNameAsync(string name);
         Task<Product?> GetByNameAsync(string name);
         Task<Product?> GetByIdAsync(int id);
+        Task<int?> GetTotalStockCountAsync();
     }
  
 }

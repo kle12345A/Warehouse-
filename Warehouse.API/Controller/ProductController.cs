@@ -28,7 +28,7 @@ namespace Warehouse.API.Controller
         {
             if (file == null || file.Length == 0)
             {
-                return BadRequest("No file uploaded.");
+                return BadRequest("Không có file nào được tải lên.");
             }
 
             try
@@ -41,7 +41,7 @@ namespace Warehouse.API.Controller
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
         [HttpGet]
@@ -127,6 +127,7 @@ namespace Warehouse.API.Controller
                 CostPrice = request.CostPrice,
                 CategoryId = request.CategoryId,
                 Images = request.Images,
+                CreatedBy = request.CreatedBy
 
             };
 
@@ -189,7 +190,12 @@ namespace Warehouse.API.Controller
             return Ok(updatedProduct);
         }
 
-
+        [HttpGet("TotalProduct")]
+        public async Task<ActionResult<int>> GetTotalProduct()
+        {
+            var totalSuppliers = await _productService.GetTotalStockCountAsync();
+            return Ok(totalSuppliers);
+        }
 
         [HttpPost("DeleteMultiple")]
         public async Task<ActionResult> DeleteMultiple([FromBody] List<int> ids)
@@ -207,7 +213,7 @@ namespace Warehouse.API.Controller
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Lỗi server: {ex.Message}" });
+                return StatusCode(500, "Không thể xóa sản phẩm vì sản phẩm đang có trong đơn đặt hàng ");
             }
         }
         [HttpDelete("{id}")]

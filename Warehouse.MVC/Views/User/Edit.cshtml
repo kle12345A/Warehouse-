@@ -1,0 +1,99 @@
+﻿@using WarehouseDTOs
+@model Warehouse.MVC.Models.UserView
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Cập nhật Người dùng</h3>
+        </div>
+        <div class="card-body">
+            <!-- Hiển thị thông báo thành công hoặc lỗi -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+
+            <form asp-action="Edit" method="post" enctype="multipart/form-data" novalidate>
+                <!-- Thông tin người dùng -->
+                <div class="card mb-4">
+                    <div class="card-header">Thông tin người dùng</div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card-body">
+                                <input hidden type="text" class="form-control" value="@Model.userDTO.UserId" name="userId">
+                                <div class="mb-3">
+                                    <label class="form-label">Tên người dùng*</label>
+                                    <input type="text" class="form-control" value="@Model.userDTO.Username" name="username" placeholder="Tên người dùng" required minlength="3" pattern="[A-Za-z0-9]+" title="Tên người dùng chỉ được chứa chữ cái và số.">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Họ và tên*</label>
+                                    <input type="text" class="form-control" value="@Model.userDTO.FullName" name="fullName" placeholder="Họ và tên" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Số điện thoại*</label>
+                                    <input type="tel" class="form-control" value="@Model.userDTO.Phone" name="phone" placeholder="Số điện thoại" required pattern="[0-9]{10,11}" title="Số điện thoại phải có 10-11 chữ số.">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Mật khẩu*</label>
+                                    <input type="password" class="form-control" value="@Model.userDTO.Password" name="password" placeholder="Mật khẩu" required minlength="6" title="Mật khẩu phải có ít nhất 6 ký tự.">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email*</label>
+                                    <input type="email" class="form-control" value="@Model.userDTO.Email" name="email" placeholder="Email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Địa chỉ*</label>
+                                    <input type="text" class="form-control" value="@Model.userDTO.Address" name="address" placeholder="Địa chỉ" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">Vai trò</div>
+                                <div class="card-body">
+                                    <select class="form-select" name="roleId" disabled>
+                                        <option value="" disabled>Chọn vai trò</option>
+                                        @if (Model.userDTO.RoleId == 0)
+                                        {
+                                            <option value="0" selected>Chủ kho</option>
+                                            <option value="1">Nhân viên</option>
+                                        }
+                                        else if (Model.userDTO.RoleId == 1)
+                                        {
+                                            <option value="0">Chủ kho</option>
+                                            <option value="1" selected>Nhân viên</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="0">Chủ kho</option>
+                                            <option value="1">Nhân viên</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+
+                <!-- Nút hành động -->
+                <div class="d-flex justify-content-between">
+                    <a href="@Url.Action("Index", "User")" class="btn btn-secondary">Quay lại</a>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

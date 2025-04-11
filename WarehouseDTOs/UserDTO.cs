@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace WarehouseDTOs
         public string? Email { get; set; }
 
         public string? Address { get; set; }
-
+        public int? RoleId { get; set; }
         public RoleUser Role { get; set; }
 
         public DateTime CreatedAt { get; set; } 
@@ -30,7 +31,12 @@ namespace WarehouseDTOs
     }
     public class UserLogin
     {
+        [Required(ErrorMessage = "Email không được để trống.")]
+        [EmailAddress(ErrorMessage = "Email không hợp lệ.")]
         public string EmailAddress { get; set; } = null!;
+
+        [Required(ErrorMessage = "Mật khẩu không được để trống.")]
+        [MinLength(6, ErrorMessage = "Mật khẩu phải có ít nhất 6 ký tự.")]
         public string Password { get; set; } = null!;
     }
     public class UserInfoDTO

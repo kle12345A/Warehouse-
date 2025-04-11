@@ -81,6 +81,39 @@ namespace BussinessLayer.Service.order
 
         }
 
+        public async Task<decimal> GetTotalExportAmountForCurrentMonthAsync()
+        {
+            // Lấy tháng và năm hiện tại
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            // Lấy danh sách các đơn hàng xuất kho (OrderType = 2) trong tháng hiện tại
+            var exportOrders = await _orderRepository.GetAllAsync();
+            exportOrders = exportOrders
+                .Where(o => o.OrderType == 2 &&
+                            o.Status == 2 &&
+                            o.OrderDate.HasValue && // Kiểm tra OrderDate không null
+                            o.OrderDate.Value.Month == currentMonth &&
+                            o.OrderDate.Value.Year == currentYear)
+                .ToList();
+
+            if (!exportOrders.Any())
+            {
+                return 0; // Nếu không có đơn hàng nào, trả về 0
+            }
+
+            // Lấy danh sách OrderID của các đơn hàng xuất kho
+            var orderIds = exportOrders.Select(o => o.OrderId).ToList();
+
+            // Lấy tất cả OrderDetails liên quan đến các đơn hàng xuất kho
+            var orderDetails = await _orderDetailRepository.GetByOrderIdsAsync(orderIds);
+
+            // Tính tổng TotalPrice
+            var totalExportAmount = orderDetails.Sum(od => od.TotalPrice);
+
+            return totalExportAmount;
+        }
+
         public Task<OrderDTO> UpdateOrderAsync(int id, OrderDTO orderDto)
         {
             throw new NotImplementedException();
@@ -141,6 +174,58 @@ namespace BussinessLayer.Service.order
                 CreatedAt = order.CreatedAt,
                 UpdatedAt = order.UpdatedAt
             };
+        }
+
+
+        public async Task<List<ProductExportDTO>> GetTop5ExportProductsAsync()
+        {
+            // Lấy danh sách các đơn hàng xuất kho (OrderType = 2) trong tất cả thời gian
+            var exportOrders = await _orderRepository.GetAllAsync();
+            exportOrders = exportOrders
+                .Where(o => o.OrderType == 2) // Chỉ lấy đơn hàng xuất kho
+                .ToList();
+
+            if (!exportOrders.Any())
+            {
+                return new List<ProductExportDTO>(); // Nếu không có đơn hàng, trả về danh sách rỗng
+            }
+
+            // Lấy danh sách OrderID của các đơn hàng xuất kho
+            var orderIds = exportOrders.Select(o => o.OrderId).ToList();
+
+            // Lấy tất cả OrderDetails liên quan đến các đơn hàng xuất kho
+            var orderDetails = await _orderDetailRepository.GetByOrderIdsAsync(orderIds);
+
+            // Nhóm OrderDetails theo ProductId và tính tổng số lượng xuất kho
+            var productQuantities = orderDetails
+                .GroupBy(od => od.ProductId)
+                .Select(g => new
+                {
+                    ProductId = g.Key,
+                    TotalQuantity = g.Sum(od => od.Quantity)
+                })
+                .OrderByDescending(x => x.TotalQuantity)
+                .Take(5) // Mặc định lấy 5 sản phẩm
+                .ToList();
+
+            // Lấy thông tin sản phẩm từ ProductRepository
+            var topProducts = new List<ProductExportDTO>();
+            foreach (var item in productQuantities)
+            {
+                var product = await _productRepository.GetByIdAsync(item.ProductId);
+                if (product != null)
+                {
+                    topProducts.Add(new ProductExportDTO
+                    {
+                        ProductId = item.ProductId,
+                        ProductName = product.Name,
+                        TotalQuantityExported = item.TotalQuantity,
+                        ImageUrl = product.Images // Lấy đường dẫn ảnh từ thuộc tính Images của Product
+                    });
+                }
+            }
+
+            return topProducts;
         }
 
     }

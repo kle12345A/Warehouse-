@@ -70,6 +70,10 @@ namespace BussinessLayer.Service.supplier
             await UpdateAsync(existingSupplier);
             return _mapper.Map<SupplierUpdateDTO>(existingSupplier);
         }
+        public async Task<int> GetTotalSuppliersAsync()
+        {
+            return await _supplierRepository.GetTotalSuppliersAsync();
+        }
 
         public async Task<bool> DeleteSupplierAsync(int id)
         {

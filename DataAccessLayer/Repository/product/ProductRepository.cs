@@ -22,5 +22,13 @@ namespace DataAccessLayer.Repository.product
                 .Include(p => p.Category)
                 .FirstOrDefaultAsync(p => p.ProductId == id);
         }
+        public async Task<bool> ProductExistsByNameAsync(string name)
+        {
+            return await _context.Products.AnyAsync(p => p.Name.ToLower() == name.ToLower());
+        }
+        public async Task<int?> GetTotalStockCountAsync()
+        {
+            return await _context.Products.SumAsync(p => p.AvailableQuantity);
+        }
     }
-}
+    }

@@ -76,7 +76,10 @@ namespace BussinessLayer.Service.product
             var product = await _productRepository.GetByNameAsync(name);
             return product != null ? _mapper.Map<ProductDTO>(product) : null;
         }
-
+        public async Task<int?> GetTotalStockCountAsync()
+        {
+            return await _productRepository.GetTotalStockCountAsync();
+        }
         public async Task<UpdateProductRequest> UpdateProductAsync(int id, UpdateProductRequest productDto)
         {
             // Lấy sản phẩm hiện tại

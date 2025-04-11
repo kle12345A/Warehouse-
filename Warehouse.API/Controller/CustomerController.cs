@@ -57,6 +57,13 @@ namespace Warehouse.API.Controller
                 return StatusCode(500, new { message = "Đã xảy ra lỗi khi cập nhật khách hàng.", error = ex.Message });
             }
         }
+        [HttpGet("TotalCustomers")]
+        public async Task<ActionResult<int>> GetTotalCustomers()
+        {
+            var totalCustomers = await _customerService.GetTotalCustomersAsync();
+            return Ok(totalCustomers);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<CustomerDTO>> GetCustomerById(int id)
         {

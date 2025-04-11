@@ -60,6 +60,19 @@ namespace DataAccessLayer.Repository.order
                 .FirstOrDefaultAsync(o => o.OrderId == id);
         }
 
+        public async Task<List<Order>> GetExportOrdersForCurrentMonthAsync()
+        {
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            return await _context.Orders
+                .Where(o => o.OrderType == 2 &&
+                            o.OrderDate.HasValue &&
+                            o.OrderDate.Value.Month == currentMonth &&
+                            o.OrderDate.Value.Year == currentYear)
+                .ToListAsync();
+        }
+
         public Task<bool> UpdateOrderStatusAsync(int orderId, OrderStatus newStatus)
         {
             throw new NotImplementedException();

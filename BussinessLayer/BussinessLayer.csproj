@@ -16,7 +16,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj" />
+    <ProjectReference Include="..\Warehouse.MVC\Warehouse.MVC.csproj" />
     <ProjectReference Include="..\WarehouseDTOs\WarehouseDTOs.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Service\other\" />
   </ItemGroup>
 
 </Project>

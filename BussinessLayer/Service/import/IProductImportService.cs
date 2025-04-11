@@ -10,7 +10,7 @@ namespace BussinessLayer.Service.import
     public interface IProductImportService
     {
         Task<List<ProductImportResultDTO>> ImportProductsFromExcelAsync(Stream excelStream);
-        Task<List<ProductImportDTO>> ReadExcelFileAsync(Stream fileStream);
+        Task<List<ProductImportWithErrorsDTO>> ReadExcelFileAsync(Stream fileStream);
 
     }
 }

@@ -14,6 +14,8 @@ namespace DataAccessLayer.Repository.orderdetail
         Task<OrderDetailWithSupplierDTO> GetOrderDetailsWithSupplierByOrderIdAsync(int orderId);
                 Task<List<OrderDetail>> GetByOrderIdAsync(int orderId);
         Task<OrderDetailWithCustomerDTO> GetOrderDetailsWithCutsomerByOrderIdAsync(int orderId);
+        Task<List<OrderDetail>> GetByOrderIdsAsync(List<int> orderIds);
+
 
 
     }

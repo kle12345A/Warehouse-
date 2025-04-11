@@ -78,5 +78,12 @@ namespace Warehouse.API.Controllers
 
             return Ok(userInfo);
         }
+        [HttpGet("TotalUsers")]
+        public async Task<ActionResult<int>> GetTotalUsers()
+        {
+            var totalUsers = await _userService.GetTotalUsersAsync();
+            return Ok(totalUsers);
+        }
+
     }
 }

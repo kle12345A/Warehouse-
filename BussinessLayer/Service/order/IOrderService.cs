@@ -19,5 +19,7 @@ namespace BussinessLayer.Service.order
         Task<OrderDTO> UpdateOrderAsync(int id, OrderDTO orderDto);
         Task<OrderDTO> CreateOrderAsync(OrderCreateDTO orderCreateDTO);
         Task<OrderDTO> UpdateStatusOrder(int id, OrderUpdateStatusDTO orderUpdateStatusDTO);
+        Task<decimal> GetTotalExportAmountForCurrentMonthAsync();
+        Task<List<ProductExportDTO>> GetTop5ExportProductsAsync();
     }
 }

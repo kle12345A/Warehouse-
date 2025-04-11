@@ -25,11 +25,13 @@
             <!-- Placeholder for logo -->
         </div>
         <nav>
+            <a asp-controller="Home" asp-action="Index" class="nav-link"><i class="fas fa-truck"></i> <span>Tổng quan</span></a>
+
             <a asp-controller="Order" asp-action="" class="nav-link"><i class="fas fa-arrow-down"></i> <span>Đơn nhập hàng</span></a>
             <a asp-controller="Order" asp-action="Xuatkho" class="nav-link"><i class="fas fa-arrow-up"></i> <span>Đơn xuất hàng</span></a>
 
             <!-- Thêm dropdown cho Sản phẩm -->
-            <a asp-controller="Product" asp-action="Index" class="nav-link dropdown-toggle">
+            <a asp-controller="Product" asp-action="Index" class="nav-link ">
                 <i class="fas fa-box-open"></i> <span>Sản phẩm</span>
             </a>
 
@@ -80,7 +82,7 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
+    
     @RenderSection("Scripts", required: false)
 </body>
 </html>

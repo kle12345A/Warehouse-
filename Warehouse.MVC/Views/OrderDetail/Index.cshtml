@@ -132,7 +132,7 @@
                 <a asp-controller="Order" asp-action="Index" type="button" class="btn btn-primary me-3">Back</a>
 
 
-                @if (Model.OrderDetailWithSupplier.OrderStatus == WarehouseDTOs.OrderStatus.Pending)
+                @if (Model.OrderDetailWithSupplier.OrderStatus == WarehouseDTOs.OrderStatus.Pending && User.IsInRole("Admin"))
                 {
                     <form id="approveForm" asp-action="ApproveOrder" asp-controller="OrderDetail" method="post">
                         <input type="hidden" name="id" value="@Model.OrderDetailWithSupplier.OrderId" />

@@ -21,8 +21,19 @@ namespace Warehouse.MVC.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("", "Auth");
         }
+        [HttpPost]
+        public IActionResult ClearSession()
+        {
+            HttpContext.Session.Clear();  // Xóa session
+            return Ok();
+        }
+
         public async Task<IActionResult> Login(UserLogin userLogin)
         {
+            if (!ModelState.IsValid)
+            {
+                return View("Index");
+            }
             string json = JsonConvert.SerializeObject(userLogin);
             using (HttpClient client = new HttpClient())
             {
@@ -60,7 +71,7 @@ namespace Warehouse.MVC.Controllers
                 }
                 else
                 {
-                    ViewBag.ErrorMessage = responseContent;
+                    TempData["ErrorMessage"] = "Email hoặc mật khẩu không chính xác.";
                     return View("Index");
                 }
             }

@@ -128,14 +128,19 @@
                 <a asp-controller="Order" asp-action="XuatKho" type="button" class="btn btn-primary me-3">Back</a>
 
 
-                @if (Model.OrderDetailWithCustomer.OrderStatus == WarehouseDTOs.OrderStatus.Pending)
+                    @if (Model.OrderDetailWithCustomer.OrderStatus == WarehouseDTOs.OrderStatus.Pending && User.IsInRole("Admin"))
                 {
                         <form id="approveForm" asp-controller="OrderDetail" asp-action="ApproveExport" method="post">
                         <input type="hidden" name="id" value="@Model.OrderDetailWithCustomer.OrderId" />
                         <button type="submit" class="btn btn-success">Approve</button>
                     </form>
                 }
-                    <a asp-controller="OrderDetail" asp-action="ExportInvoice" asp-route-id="@Model.OrderDetailWithCustomer.OrderId" class="btn btn-info ms-2">Xuất hóa đơn</a>
+
+                    @if (Model.OrderDetailWithCustomer.OrderStatus == WarehouseDTOs.OrderStatus.Approved)
+                    {
+                        <a asp-controller="OrderDetail" asp-action="ExportInvoice" asp-route-id="@Model.OrderDetailWithCustomer.OrderId" class="btn btn-info ms-2">Xuất hóa đơn</a>
+
+                    }
             </div>
         </div>
 

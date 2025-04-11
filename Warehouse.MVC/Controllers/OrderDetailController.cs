@@ -13,10 +13,14 @@ namespace Warehouse.MVC.Controllers
 
     public class OrderDetailController : Controller
     {
+        private readonly PdfService _pdfService;
         private string Url = "https://localhost:7200/api/OrderDetail";
         private string UrlOrder = "https://localhost:7200/api/Order";
         private string UrlOrderC = "https://localhost:7200/api/OrderDetail/Details";
-
+        public OrderDetailController(PdfService pdfService) // Inject PdfService
+        {
+            _pdfService = pdfService;
+        }
         public async Task<IActionResult> Index(int id)
         {
             var ord = await GetOrderByIdAsync(id);
@@ -129,7 +133,7 @@ namespace Warehouse.MVC.Controllers
                         else
                         {
                             var errorContent = await res.Content.ReadAsStringAsync();
-                            TempData["ErrorMessage"] = "Phê duyệt đơn hàng thất bại: " + errorContent;
+                            TempData["ErrorMessage"] = "Phê duyệt đơn hàng thất bại số lượng sản phẩm không đủ để xuất kho";
                             return RedirectToAction("XuatKho", "Order");
                         }
 
@@ -141,33 +145,34 @@ namespace Warehouse.MVC.Controllers
 
         public async Task<IActionResult> ExportInvoice(int id)
         {
-            // Lấy thông tin đơn hàng từ API
-            var order = await GetOrderByIdWithCusAsync(id);
-
-            if (order == null || order.OrderDetails == null)
+            try
             {
-                TempData["ErrorMessage"] = "Không thể lấy thông tin đơn hàng để xuất hóa đơn.";
+                // Lấy thông tin đơn hàng từ API
+                var order = await GetOrderByIdWithCusAsync(id);
+
+                if (order == null || order.OrderDetails == null)
+                {
+                    TempData["ErrorMessage"] = "Không thể lấy thông tin đơn hàng để xuất hóa đơn.";
+                    return RedirectToAction("XuatKho", new { id });
+                }
+
+                // Tạo view model để truyền vào PdfService
+                var viewModel = new OrderDetailView
+                {
+                    OrderDetailWithCustomer = order
+                };
+
+                // Sử dụng PdfService để tạo PDF
+                var invoice = _pdfService.MapToInvoiceViewModel(viewModel);
+                var pdfBytes = await _pdfService.GenerateInvoicePdf(invoice); // Thêm await
+                return File(pdfBytes, "application/pdf", $"HoaDon_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Lỗi khi xuất hóa đơn: {ex.Message}";
                 return RedirectToAction("XuatKho", new { id });
             }
-
-            // Tạo view model để truyền vào view PDF
-            var viewModel = new OrderDetailView
-            {
-                OrderDetailWithCustomer = order
-            };
-
-            // Tạo PDF từ view
-            var pdf = new ViewAsPdf("ExportInvoice", viewModel)
-            {
-                FileName = $"HoaDon_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf",
-                PageSize = Rotativa.AspNetCore.Options.Size.A4,
-                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait
-            };
-
-            // Trả về IActionResult
-            return pdf;
         }
-
 
 
         //==========================

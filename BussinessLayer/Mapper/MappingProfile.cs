@@ -54,8 +54,14 @@ namespace BussinessLayer.Mapper
             // User
             CreateMap<User, UserDTO>();
             CreateMap<UserDTO, User>();
-
-
+            CreateMap<User, UserDTO>()
+            .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => (int)src.Role)) // Ánh xạ Role (enum) sang RoleId (int)
+            .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString())); // Ánh xạ Role (enum) sang Role (string
+            CreateMap<UserDTO, User>()
+            .ForMember(dest => dest.UserId, opt => opt.Ignore()) // Bỏ qua UserId
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Bỏ qua CreatedAt
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore()) // Bỏ qua UpdatedAt
+            .ForMember(dest => dest.Role, opt => opt.MapFrom(src => (RoleUser)src.RoleId)); // Ánh xạ roleId sang Role (enum)
 
             CreateMap<Customer, CustomerDTO>();
             CreateMap<CustomerDTO, Customer>();

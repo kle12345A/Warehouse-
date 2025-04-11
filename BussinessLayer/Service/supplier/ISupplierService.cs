@@ -16,5 +16,7 @@ namespace BussinessLayer.Service.supplier
         Task<SupplierDTO> CreateSupplierAsync(SupplierDTO supplierDto);
         Task<SupplierUpdateDTO> UpdateSupplierAsync(int id, SupplierUpdateDTO supplierDto);
         Task<bool> DeleteSupplierAsync(int id);
+        Task<int> GetTotalSuppliersAsync();
+
     }
 }

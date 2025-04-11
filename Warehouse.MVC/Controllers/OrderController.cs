@@ -170,18 +170,27 @@ namespace Warehouse.MVC.Controllers
 
 
 
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(int page = 1, int pageSize = 5)
         {
             var sup = await GetSupplierAsync();
             var pro = await GetProductAsync();
             var cus = await GetCustomerAsync();
             var cartItems = HttpContext.Session.GetObjectFromJson<List<CartItemDTO>>("CartItems") ?? new List<CartItemDTO>();
+
+            // Phân trang cho danh sách sản phẩm
+            int totalItems = pro.Count;
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            var pagedProducts = pro.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
             var view = new OrderVIew()
             {
-                CustomerDTOs= cus,
-                Products = pro,
+                CustomerDTOs = cus,
+                Products = pagedProducts, // Sử dụng danh sách sản phẩm đã phân trang
                 Suppliers = sup,
-                CartItems = cartItems
+                CartItems = cartItems,
+                CurrentPage = page, // Lưu thông tin phân trang
+                TotalPages = totalPages,
+                PageSize = pageSize
             };
             return View(view);
         }
@@ -209,7 +218,22 @@ namespace Warehouse.MVC.Controllers
             };
             return View(view);
         }
+        public async Task<IActionResult> GetProductListImport(int page = 1, int pageSize = 5)
+        {
+            var pro = await GetProductAsync();
+            int totalItems = pro.Count;
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            var pagedProducts = pro.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
+            var view = new OrderVIew()
+            {
+                Products = pagedProducts,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                PageSize = pageSize
+            };
+            return PartialView("_ProductListImport", view);
+        }
         public async Task<IActionResult> GetProductList(int page = 1, int pageSize = 5)
         {
             var pro = await GetProductAsync();

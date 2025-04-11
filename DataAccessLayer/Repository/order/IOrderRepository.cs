@@ -15,7 +15,6 @@ namespace DataAccessLayer.Repository.order
         Task<Order> CreateOrderAsync(Order order, List<OrderDetail> orderDetails);
         Task<Order> GetByIdWithDetailsAsync(int id);
         Task<bool> UpdateOrderStatusAsync(int orderId, OrderStatus newStatus);
-
-
+        Task<List<Order>> GetExportOrdersForCurrentMonthAsync();
     }
 }

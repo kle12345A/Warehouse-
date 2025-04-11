@@ -12,5 +12,7 @@ namespace DataAccessLayer.Repository.customer
     {
         Task<List<Customer>> GetCustomersByIdsAsync(List<int> ids);
         Task DeleteMultipleAsync(List<Customer> customers);
+        Task<int> GetTotalCustomersAsync();
+
     }
 }

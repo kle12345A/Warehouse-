@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Rotativa.AspNetCore;
+using Warehouse.MVC.Models;
 
 namespace Warehouse.MVC
 {
@@ -20,8 +21,19 @@ namespace Warehouse.MVC
                 options.Cookie.IsEssential = true;
             });
 
+            builder.Services.AddScoped<PdfService>();
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                    policy =>
+                    {
+                        policy.AllowAnyOrigin() // Cho phép m?i ngu?n (có th? gi?i h?n domain n?u c?n)
+                              .AllowAnyMethod()
+                              .AllowAnyHeader();
+                    });
+            });
 
             builder.Services
      .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -55,8 +67,9 @@ namespace Warehouse.MVC
             app.UseAuthorization();
 
             app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+     name: "default",
+     pattern: "{controller=Auth}/{action=Index}/{id?}");
+
 
             app.Run();
         }

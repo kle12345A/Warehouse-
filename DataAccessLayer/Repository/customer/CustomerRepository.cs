@@ -23,6 +23,12 @@ namespace DataAccessLayer.Repository.customer
             _dbContext.Customers.RemoveRange(customers);
             await _dbContext.SaveChangesAsync();
         }
+        public async Task<int> GetTotalCustomersAsync()
+        {
+            return await _dbContext.Customers.CountAsync();
+        }
+
+
     }
 
 }

@@ -35,6 +35,7 @@ namespace WarehouseDTOs
     {
         public int OrderId { get; set; }
         public string FullName { get; set; }
+        public DateTime OrderDate { get; set; }
         public string Phone { get; set; }
         public OrderStatus OrderStatus { get; set; }
         public OrderTypeEnum OrderTypeEnum { get; set; }

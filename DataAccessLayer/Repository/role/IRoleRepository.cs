@@ -1,17 +1,14 @@
 ﻿using DataAccessLayer.BaseRepository;
 using DataAccessLayer.Models;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccessLayer.Repository.supplier
+namespace DataAccessLayer.Repository.role
 {
-    public interface ISupplierRepository : IBaseRepository<Supplier>
+    public interface IRoleRepository : IBaseRepository<Role>
     {
-        Task<int> GetTotalSuppliersAsync();
-
     }
 }

@@ -33,7 +33,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th><input type="checkbox" id="selectAll"></th>
+                           @*  <th><input type="checkbox" id="selectAll"></th> *@
                             <th>Danh mục</th>
                             <th>Số lượng sản phẩm</th>
                         </tr>
@@ -44,9 +44,9 @@
                             @foreach (var category in Model.Categories)
                             {
                                 <tr>
-                                    <td>
+                                   @*  <td>
                                         <input type="checkbox" name="selectedCategories" value="@category.CategoryId" class="categoryCheckbox">
-                                    </td>
+                                    </td> *@
                                     <td>
                                         <a style="text-decoration:none;" asp-controller="Category" asp-action="Update" asp-route-id="@category.CategoryId" class="product-link">
                                             @category.CategoryName

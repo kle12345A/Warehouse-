@@ -20,6 +20,13 @@ namespace DataAccessLayer.Repository.orderdetail
             .ToListAsync();
     }
 
+        public async Task<List<OrderDetail>> GetByOrderIdsAsync(List<int> orderIds)
+        {
+            return await _context.OrderDetails
+                .Where(od => orderIds.Contains(od.OrderId))
+                .ToListAsync();
+        }
+
         public async Task<OrderDetailWithCustomerDTO> GetOrderDetailsWithCutsomerByOrderIdAsync(int orderId)
         {
             var order = await _context.Orders

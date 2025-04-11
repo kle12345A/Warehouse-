@@ -1,8 +1,235 @@
-﻿@{
+﻿@model Warehouse.MVC.Models.HomeView
+@{
     ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<div class="col-lg-12">
+    <div class="row g-4">
+        <!-- Doanh thu -->
+        <div class="col-xxl-3 col-md-6">
+            <div class="card info-card revenue-card">
+                <div class="filter">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Giá trị xuất tháng này</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-currency-dollar"></i> <!-- Giữ nguyên icon -->
+                        </div>
+                        <div class="ps-3">
+                            <h6 id="revenue-value">
+                                @(ViewBag.TotalExportAmount == 0 ? "N/A" : ViewBag.TotalExportAmount.ToString("N2") + " VNĐ")
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- End Doanh thu -->
+        <!-- Khách hàng -->
+        <div class="col-xxl-3 col-md-6">
+            <div class="card info-card customers-card">
+                <div class="filter">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Khách hàng</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-people"></i> <!-- Giữ nguyên icon -->
+                        </div>
+                        <div class="ps-3">
+                            <h6 id="customer-count">@ViewBag.TotalCustomers</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- End Khách hàng -->
+        <!-- Tổng sản phẩm trong kho -->
+        <div class="col-xxl-3 col-md-6">
+            <div class="card info-card sales-card">
+                <div class="filter">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Tổng sản phẩm trong kho</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-box-seam"></i> <!-- Thay đổi icon -->
+                        </div>
+                        <div class="ps-3">
+                            <h6 id="sales-value">@ViewBag.TotalStock</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- End Tổng sản phẩm trong kho -->
+        <!-- Nhà cung cấp -->
+        <div class="col-xxl-3 col-md-6">
+            <div class="card info-card orders-card">
+                <div class="filter">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Nhà cung cấp</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-truck"></i> <!-- Thay đổi icon -->
+                        </div>
+                        <div class="ps-3">
+                            <h6 id="orders-value">@ViewBag.TotalSuppliers</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- End Nhà cung cấp -->
+    </div>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <!-- Top 5 Sản Phẩm Xuất Kho Nhiều Nhất -->
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Top 5 Sản Phẩm Xuất Kho Nhiều Nhất</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Số lượng đã xuất</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.productExports != null && Model.productExports.Any())
+                            {
+                                foreach (var product in Model.productExports)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="#" class="product-link">
+                                                @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                                {
+                                                    <img src="@product.ImageUrl" alt="@product.ProductName" class="product-image" />
+                                                }
+                                                else
+                                                {
+                                                    <img src="https://via.placeholder.com/40" alt="No image" class="product-image" />
+                                                }
+                                                @product.ProductName
+                                            </a>
+                                        </td>
+                                        <td>@product.TotalQuantityExported</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="2" class="text-center">Không có sản phẩm nào được xuất kho.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- End Left side columns -->
+
+<style>
+    /* Tùy chỉnh thẻ card */
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        background-color: #e6e9f5; /* Màu nền đậm hơn (trước là #f8f9fd) */
+    }
+
+    /* Tùy chỉnh tiêu đề card */
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c384e;
+    }
+
+    /* Tùy chỉnh biểu tượng */
+    .card-icon {
+        width: 50px;
+        height: 50px;
+        background-color: #e0f7e9; /* Màu nền xanh nhạt cho Revenue */
+        color: #28a745;
+        font-size: 1.5rem;
+    }
+
+    .customers-card .card-icon {
+        background-color: #ffe5d0; /* Màu nền cam nhạt cho Customers */
+        color: #ff851b;
+    }
+
+    .sales-card .card-icon {
+        background-color: #d0e4ff; /* Màu nền xanh dương nhạt cho Sales */
+        color: #007bff;
+    }
+
+    .orders-card .card-icon {
+        background-color: #f5d0ff; /* Màu nền tím nhạt cho Orders */
+        color: #c71585;
+    }
+
+    /* Tùy chỉnh giá trị chính */
+    .card-body h6 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2C3E50;
+    }
+
+    /* Tùy chỉnh phần trăm thay đổi */
+    .card-body .small {
+        font-size: 0.9rem;
+    }
+
+    .text-success {
+        color: #28a745 !important;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
+
+    /* Đảm bảo khoảng cách đều giữa các card */
+    .row.g-4 {
+        margin: -0.5rem;
+    }
+
+        .row.g-4 > div {
+            padding: 0.5rem;
+        }
+
+            /* Thêm khoảng cách lề cho thẻ đầu tiên và thẻ cuối cùng */
+            .row.g-4 > div:first-child {
+                padding-left: 1.5rem; /* Cách lề trái thêm */
+            }
+
+            .row.g-4 > div:last-child {
+                padding-right: 1.5rem; /* Cách lề phải thêm */
+            }
+
+    /* Tùy chỉnh bảng sản phẩm */
+    .product-link {
+        text-decoration: none;
+        color: inherit; /* Giữ màu chữ mặc định */
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Khoảng cách giữa ảnh và tên */
+    }
+
+    .product-image {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+</style>

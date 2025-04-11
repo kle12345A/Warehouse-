@@ -59,7 +59,10 @@ namespace BussinessLayer.Service.customer
             }
             return _mapper.Map<CustomerDTO>(customer);
         }
-
+        public async Task<int> GetTotalCustomersAsync()
+        {
+            return await _customerRepository.GetTotalCustomersAsync();
+        }
         public async Task<CustomerDTO> UpdateCustomerAsync(int id, CustomerUpdateDTO customerDto)
         {
             if (id <= 0)

@@ -61,20 +61,21 @@ namespace Warehouse.MVC.Controllers
             return View();
         }
 
+
         [HttpPost]
         public async Task<IActionResult> ReadFileAndPreview(IFormFile file, int page = 1, int pageSize = 10)
         {
             if (file == null || file.Length == 0)
             {
                 TempData["ErrorMessage"] = "Vui lòng chọn file Excel!";
-                return RedirectToAction("Index");
+                return View("Preview");
             }
 
             if (!Path.GetExtension(file.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase) &&
                 !Path.GetExtension(file.FileName).Equals(".xls", StringComparison.OrdinalIgnoreCase))
             {
                 TempData["ErrorMessage"] = "Vui lòng chọn file Excel (.xls hoặc .xlsx)!";
-                return RedirectToAction("Index");
+                return View("Preview");
             }
 
             try
@@ -90,30 +91,25 @@ namespace Warehouse.MVC.Controllers
                         if (response.IsSuccessStatusCode)
                         {
                             var data = await response.Content.ReadAsStringAsync();
-                            var records = JsonConvert.DeserializeObject<List<ProductImportDTO>>(data);
+                            var records = JsonConvert.DeserializeObject<List<ProductImportWithErrorsDTO>>(data);
 
                             // Phân trang
                             int totalItems = records.Count;
                             int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
                             var pagedData = records.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-                            // Truyền dữ liệu vào ViewBag
+                            // Lưu dữ liệu vào ViewBag
                             ViewBag.PreviewData = pagedData;
                             ViewBag.Page = page;
                             ViewBag.PageSize = pageSize;
                             ViewBag.TotalPages = totalPages;
                             ViewBag.TotalItems = totalItems;
-
-                            // Lưu toàn bộ dữ liệu vào TempData để sử dụng khi gửi (nếu cần)
-                            TempData["FullPreviewData"] = JsonConvert.SerializeObject(records);
-
-                            return View("Preview");
+                            TempData["FullPreviewData"] = JsonConvert.SerializeObject(records); // Để xác nhận sau
                         }
                         else
                         {
                             var errorMessage = await response.Content.ReadAsStringAsync();
-                            TempData["ErrorMessage"] = $"Lỗi khi đọc file: {errorMessage}";
-                            return RedirectToAction("Index");
+                            TempData["ErrorMessage"] = errorMessage;
                         }
                     }
                 }
@@ -121,8 +117,9 @@ namespace Warehouse.MVC.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = $"Lỗi nội bộ: {ex.Message}";
-                return RedirectToAction("Index");
             }
+
+            return View("Preview");
         }
         public IActionResult Preview()
         {
@@ -303,9 +300,16 @@ namespace Warehouse.MVC.Controllers
                     return RedirectToAction("Preview");
                 }
 
+                var userId = HttpContext.Session.GetString("UserId");
+                if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int parsedUserId))
+                {
+                    TempData["ErrorMessage"] = "Bạn cần đăng nhập trước khi xác nhận nhập hàng!";
+                    return RedirectToAction("Login", "Auth");
+                }
+
                 using (var client = new HttpClient())
                 {
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json")); // Định nghĩa JSON format
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                     foreach (var importRecord in importRecords)
                     {
@@ -318,7 +322,8 @@ namespace Warehouse.MVC.Controllers
                             Price = importRecord.Price,
                             CostPrice = importRecord.CostPrice,
                             CategoryId = importRecord.CategoryId,
-                            Images = importRecord.ImagePath
+                            Images = importRecord.ImagePath,
+                            CreatedBy = parsedUserId // Thêm UserId
                         };
 
                         var jsonContent = new StringContent(JsonConvert.SerializeObject(productDto), Encoding.UTF8, "application/json");
@@ -343,6 +348,7 @@ namespace Warehouse.MVC.Controllers
                 return RedirectToAction("Preview");
             }
         }
+
 
 
         public async Task<IActionResult> Details(int id, int categoryId)

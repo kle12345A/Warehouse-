@@ -80,5 +80,34 @@ namespace Warehouse.API.Controller
             return Ok(updatedOrder);
         }
 
+        [HttpGet("total-export-amount-current-month")]
+        public async Task<IActionResult> GetTotalExportAmountForCurrentMonth()
+        {
+            try
+            {
+                var totalAmount = await _orderService.GetTotalExportAmountForCurrentMonthAsync();
+                return Ok(new { TotalExportAmount = totalAmount });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while calculating the total export amount.", Error = ex.Message });
+            }
+        }
+        [HttpGet("top-5-export-products")]
+        public async Task<IActionResult> GetTop5ExportProducts()
+        {
+            try
+            {
+                var topProducts = await _orderService.GetTop5ExportProductsAsync();
+                return Ok(topProducts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while fetching top export products.", Error = ex.Message });
+            }
+        }
+
+
+
     }
 }

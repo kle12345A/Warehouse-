@@ -57,7 +57,7 @@
                             <tfoot>
                                 <tr>
                                     <td colspan="5" class="text-end"><strong>Tổng tiền:</strong></td>
-                                    <td><strong>@(Model.CartItems?.Sum(x => x.Price * x.Quantity) ?? 0)đ</strong></td>
+                                    <td><strong>@String.Format("{0:N0} đ",Model.CartItems?.Sum(x => x.Price * x.Quantity) ?? 0)đ</strong></td>
                                     <td></td>
                                 </tr>
                             </tfoot>

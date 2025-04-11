@@ -17,7 +17,7 @@ namespace BussinessLayer.Service.customer
             Task<List<CustomerDTO>> GetAllCustomersAsync();
             Task<CustomerDTO> GetCustomerByIdAsync(int id);
             Task<CustomerDTO> UpdateCustomerAsync(int id, CustomerUpdateDTO customerDto);
-
+        Task<int> GetTotalCustomersAsync();
         Task<bool> DeleteMultipleCustomersAsync(List<int> ids);
     }
 }

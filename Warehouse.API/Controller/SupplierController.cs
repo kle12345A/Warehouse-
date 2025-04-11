@@ -51,6 +51,12 @@ namespace Warehouse.API.Controllers
             var updatedSupplier = await _supplierService.UpdateSupplierAsync(id, supplierDto);
             return Ok(updatedSupplier);
         }
+        [HttpGet("TotalSuppliers")]
+        public async Task<ActionResult<int>> GetTotalSuppliers()
+        {
+            var totalSuppliers = await _supplierService.GetTotalSuppliersAsync();
+            return Ok(totalSuppliers);
+        }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteSupplier(int id)
