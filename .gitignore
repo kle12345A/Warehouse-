@@ -1,5 +1,43 @@
 .vs/
 bin/
 obj/
+# Ignore app settings
+appsettings.json
+appsettings.Development.json
+appsettings.*.json
+
+# Ignore user secrets
+*.secret.json
+
+# Build outputs
+bin/
+obj/
+out/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Visual Studio
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# Publish output
+/dist/
+wwwroot/build/
+wwwroot/dist/
+node_modules/
+
+# Temp files
+*.tmp
+*.temp
+
+# IIS Express
+.vs/
 
 *.cache
