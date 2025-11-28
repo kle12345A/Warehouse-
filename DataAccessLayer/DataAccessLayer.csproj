@@ -6,14 +6,17 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
-	<!-- Remove mọi tham chiếu tới appsettings -->
+	<!-- Remove Default Includes -->
 	<ItemGroup>
 		<None Remove="appsettings.json" />
 		<None Remove="appsettings.Development.json" />
 	</ItemGroup>
 
-	<!-- KHÔNG Include appsettings nữa -->
-	<!-- DAL không cần appsettings, config phải ở WebAPI -->
+	<!-- Override để ngăn MSBuild cố copy -->
+	<ItemGroup>
+		<None Update="appsettings.json" CopyToOutputDirectory="Never" />
+		<None Update="appsettings.Development.json" CopyToOutputDirectory="Never" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.13">
