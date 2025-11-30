@@ -5,19 +5,31 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+		<OutputType>Exe</OutputType>
 	</PropertyGroup>
 
+	<!-- Loại MVC ra khỏi publish API -->
+	<ItemGroup>
+		<Content Remove="..\Warehouse.MVC\**\*" />
+		<None Remove="..\Warehouse.MVC\**\*" />
+	</ItemGroup>
+
+	<!-- Không publish file cấu hình của MVC hoặc file trùng -->
+	<ItemGroup>
+		<Content Remove="appsettings.json" />
+		<Content Remove="appsettings.Development.json" />
+	</ItemGroup>
 
 	<ItemGroup>
-    <PackageReference Include="AutoMapper" Version="12.0.1" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-    <PackageReference Include="CloudinaryDotNet" Version="1.27.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-  </ItemGroup>
+		<PackageReference Include="AutoMapper" Version="12.0.1" />
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+		<PackageReference Include="CloudinaryDotNet" Version="1.27.4" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\BussinessLayer\BussinessLayer.csproj" />
-    <ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\BussinessLayer\BussinessLayer.csproj" />
+		<ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj" />
+	</ItemGroup>
 
 </Project>
