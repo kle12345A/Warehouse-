@@ -4,8 +4,7 @@ trigger:
 pool:
   name: Default
   demands:
-  - agent.name -equals SinhPC
-
+    - agent.name -equals LE-KIEN
 variables:
   buildConfiguration: Release
 
