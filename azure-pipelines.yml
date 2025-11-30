@@ -2,7 +2,9 @@ trigger:
 - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: Default
+  demands:
+  - agent.name -equals SinhPC
 
 variables:
   buildConfiguration: Release
