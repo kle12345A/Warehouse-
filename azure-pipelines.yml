@@ -5,23 +5,98 @@ pool:
   name: Default
   demands:
     - agent.name -equals LE-KIEN
+
 variables:
   buildConfiguration: Release
+  api_publish: '$(Build.ArtifactStagingDirectory)/api'
+  mvc_publish: '$(Build.ArtifactStagingDirectory)/mvc'
 
 steps:
+# =====================
+# 1. Restore
+# =====================
 - task: DotNetCoreCLI@2
+  displayName: Restore
   inputs:
     command: 'restore'
     projects: '**/*.csproj'
 
+# =====================
+# 2. Build
+# =====================
 - task: DotNetCoreCLI@2
+  displayName: Build
   inputs:
     command: 'build'
     projects: '**/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
+# =====================
+# 3. Test
+# =====================
 - task: DotNetCoreCLI@2
+  displayName: Test
   inputs:
     command: 'test'
     projects: '**/*Tests/*.csproj'
     arguments: '--configuration $(buildConfiguration) --no-build'
+
+
+# =====================
+# 4. Publish API
+# =====================
+- task: DotNetCoreCLI@2
+  displayName: Publish API
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: 'Warehouse.API/Warehouse.API.csproj'
+    arguments: '--configuration $(buildConfiguration) --output $(api_publish)'
+
+
+# =====================
+# 5. Publish MVC
+# =====================
+- task: DotNetCoreCLI@2
+  displayName: Publish MVC
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: 'Warehouse.MVC/Warehouse.MVC.csproj'
+    arguments: '--configuration $(buildConfiguration) --output $(mvc_publish)'
+
+
+# =====================
+# 6. Deploy API to IIS
+# =====================
+- task: PowerShell@2
+  displayName: Deploy API to IIS
+  inputs:
+    targetType: inline
+    script: |
+      Write-Host "Stopping AppPool WarehouseAPI"
+      Stop-WebAppPool -Name "WarehouseAPI"
+
+      Write-Host "Copy API files"
+      robocopy "$(api_publish)" "C:\inetpub\WarehouseAPI" /MIR
+
+      Write-Host "Starting AppPool WarehouseAPI"
+      Start-WebAppPool -Name "WarehouseAPI"
+
+
+# =====================
+# 7. Deploy MVC to IIS
+# =====================
+- task: PowerShell@2
+  displayName: Deploy MVC to IIS
+  inputs:
+    targetType: inline
+    script: |
+      Write-Host "Stopping AppPool WarehouseMVC"
+      Stop-WebAppPool -Name "WarehouseMVC"
+
+      Write-Host "Copy MVC files"
+      robocopy "$(mvc_publish)" "C:\inetpub\WarehouseMVC" /MIR
+
+      Write-Host "Starting AppPool WarehouseMVC"
+      Start-WebAppPool -Name "WarehouseMVC"
