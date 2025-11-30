@@ -13,51 +13,39 @@ variables:
 
 steps:
 
-# =======================
-# 0. CLEAN
-# =======================
+# CLEAN ARTIFACT
 - powershell: |
-    Write-Host "Cleaning old artifact folder"
+    Write-Host "Clean artifact folder"
     Remove-Item "$(Build.ArtifactStagingDirectory)" -Recurse -Force -ErrorAction SilentlyContinue
-  displayName: Clean artifact folder
+  displayName: Clean artifacts
 
 
-# =======================
-# 1. RESTORE
-# =======================
+
+# RESTORE
 - task: DotNetCoreCLI@2
   displayName: Restore
   inputs:
-    command: 'restore'
+    command: restore
     projects: '**/*.csproj'
 
-
-# =======================
-# 2. BUILD
-# =======================
+# BUILD
 - task: DotNetCoreCLI@2
   displayName: Build
   inputs:
-    command: 'build'
+    command: build
     projects: '**/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
-
-# =======================
-# 3. TEST (OPTIONAL)
-# =======================
+# TEST (OPTIONAL)
 - task: DotNetCoreCLI@2
   displayName: Test
   inputs:
-    command: 'test'
+    command: test
     projects: '**/*Tests/*.csproj'
     arguments: '--configuration $(buildConfiguration) --no-build'
   continueOnError: true
 
-
-# =======================
-# 4. Publish API
-# =======================
+# PUBLISH API
 - task: DotNetCoreCLI@2
   displayName: Publish API
   inputs:
@@ -69,12 +57,10 @@ steps:
       -o $(api_publish)
       /p:PublishSingleFile=false
       /p:SelfContained=false
+      /p:UseAppHost=false
     zipAfterPublish: false
 
-
-# =======================
-# 5. Publish MVC
-# =======================
+# PUBLISH MVC
 - task: DotNetCoreCLI@2
   displayName: Publish MVC
   inputs:
@@ -86,40 +72,35 @@ steps:
       -o $(mvc_publish)
       /p:PublishSingleFile=false
       /p:SelfContained=false
+      /p:UseAppHost=false
     zipAfterPublish: false
 
-
-# =======================
-# 6. Deploy API (NO AppPool control on Windows 10)
-# =======================
+# DEPLOY API
 - task: PowerShell@2
   displayName: Deploy API to IIS
   inputs:
     targetType: inline
     script: |
-      Write-Host "Cleaning API folder"
+      iisreset /stop
+
       Remove-Item "C:\inetpub\WarehouseAPI" -Recurse -Force -ErrorAction SilentlyContinue
       New-Item -ItemType Directory -Path "C:\inetpub\WarehouseAPI" | Out-Null
 
-      Write-Host "Copy API files"
       robocopy "$(api_publish)" "C:\inetpub\WarehouseAPI" /MIR
 
-      Write-Host "API deployed successfully!"
+      iisreset /start
 
-
-# =======================
-# 7. Deploy MVC (NO AppPool control)
-# =======================
+# DEPLOY MVC
 - task: PowerShell@2
   displayName: Deploy MVC to IIS
   inputs:
     targetType: inline
     script: |
-      Write-Host "Cleaning MVC folder"
+      iisreset /stop
+
       Remove-Item "C:\inetpub\WarehouseMVC" -Recurse -Force -ErrorAction SilentlyContinue
       New-Item -ItemType Directory -Path "C:\inetpub\WarehouseMVC" | Out-Null
 
-      Write-Host "Copy MVC files"
       robocopy "$(mvc_publish)" "C:\inetpub\WarehouseMVC" /MIR
 
-      Write-Host "MVC deployed successfully!"
+      iisreset /start
