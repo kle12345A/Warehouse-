@@ -88,7 +88,6 @@ steps:
       Start-WebAppPool -Name "WarehouseAPI"
 
 
-
 # =====================
 # 7. Deploy MVC to IIS
 # =====================
@@ -99,6 +98,10 @@ steps:
     script: |
       Write-Host "Stopping AppPool WarehouseMVC"
       Stop-WebAppPool -Name "WarehouseMVC"
+
+      Write-Host "Clean old deployment folder"
+      Remove-Item "C:\inetpub\WarehouseMVC" -Recurse -Force -ErrorAction SilentlyContinue
+      New-Item -ItemType Directory -Path "C:\inetpub\WarehouseMVC"
 
       Write-Host "Copy MVC files"
       robocopy "$(mvc_publish)" "C:\inetpub\WarehouseMVC" /MIR
