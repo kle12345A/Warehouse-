@@ -52,6 +52,7 @@ steps:
     publishWebProjects: false
     projects: 'Warehouse.API/Warehouse.API.csproj'
     arguments: '--configuration $(buildConfiguration) --output $(api_publish)'
+    zipAfterPublish: false
 
 
 # =====================
