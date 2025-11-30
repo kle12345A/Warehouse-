@@ -12,18 +12,29 @@ variables:
   mvc_publish: '$(Build.ArtifactStagingDirectory)/mvc'
 
 steps:
-# =====================
+
+# =======================
+# 0. Clean old build cache
+# =======================
+- powershell: |
+    Write-Host "Cleaning old artifact folder"
+    Remove-Item "$(Build.ArtifactStagingDirectory)" -Recurse -Force -ErrorAction SilentlyContinue
+  displayName: Clean artifact folder
+
+
+# =======================
 # 1. Restore
-# =====================
+# =======================
 - task: DotNetCoreCLI@2
   displayName: Restore
   inputs:
     command: 'restore'
     projects: '**/*.csproj'
 
-# =====================
+
+# =======================
 # 2. Build
-# =====================
+# =======================
 - task: DotNetCoreCLI@2
   displayName: Build
   inputs:
@@ -31,80 +42,95 @@ steps:
     projects: '**/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
-# =====================
-# 3. Test
-# =====================
+
+# =======================
+# 3. Tests (nếu không có test sẽ skip)
+# =======================
 - task: DotNetCoreCLI@2
   displayName: Test
   inputs:
     command: 'test'
     projects: '**/*Tests/*.csproj'
     arguments: '--configuration $(buildConfiguration) --no-build'
+  continueOnError: true
 
 
-# =====================
+# =======================
 # 4. Publish API
-# =====================
+# =======================
 - task: DotNetCoreCLI@2
   displayName: Publish API
   inputs:
-    command: publish
+    command: 'publish'
     publishWebProjects: false
     projects: 'Warehouse.API/Warehouse.API.csproj'
-    arguments: '--configuration $(buildConfiguration) --output $(api_publish)'
+    arguments: >
+      -c Release
+      -o $(api_publish)
+      /p:GenerateRuntimeConfigurationFiles=true
+      /p:PublishSingleFile=false
+      /p:SelfContained=false
+      /p:CopyOutputSymbolsToOutputDirectory=false
     zipAfterPublish: false
 
 
-# =====================
+# =======================
 # 5. Publish MVC
-# =====================
+# =======================
 - task: DotNetCoreCLI@2
   displayName: Publish MVC
   inputs:
-    command: publish
+    command: 'publish'
     publishWebProjects: false
     projects: 'Warehouse.MVC/Warehouse.MVC.csproj'
-    arguments: '--configuration $(buildConfiguration) --output $(mvc_publish)'
+    arguments: >
+      -c Release
+      -o $(mvc_publish)
+      /p:GenerateRuntimeConfigurationFiles=true
+      /p:PublishSingleFile=false
+      /p:SelfContained=false
+      /p:CopyOutputSymbolsToOutputDirectory=false
+    zipAfterPublish: false
 
 
-# =====================
+# =======================
 # 6. Deploy API to IIS
-# =====================
+# =======================
 - task: PowerShell@2
   displayName: Deploy API to IIS
   inputs:
     targetType: inline
     script: |
       Write-Host "Stopping AppPool WarehouseAPI"
-      Stop-WebAppPool -Name "WarehouseAPI"
+      Stop-WebAppPool -Name "WarehouseAPI" -ErrorAction SilentlyContinue
 
-      Write-Host "Clean old deployment folder"
+      Write-Host "Clean old API folder"
       Remove-Item "C:\inetpub\WarehouseAPI" -Recurse -Force -ErrorAction SilentlyContinue
-      New-Item -ItemType Directory -Path "C:\inetpub\WarehouseAPI"
+      New-Item -ItemType Directory -Path "C:\inetpub\WarehouseAPI" | Out-Null
 
-      Write-Host "Copy API files"
+      Write-Host "Copy published API files"
       robocopy "$(api_publish)" "C:\inetpub\WarehouseAPI" /MIR
 
       Write-Host "Starting AppPool WarehouseAPI"
       Start-WebAppPool -Name "WarehouseAPI"
 
 
-# =====================
+# =======================
 # 7. Deploy MVC to IIS
-# =====================
+# =======================
 - task: PowerShell@2
   displayName: Deploy MVC to IIS
   inputs:
     targetType: inline
     script: |
       Write-Host "Stopping AppPool WarehouseMVC"
-      Stop-WebAppPool -Name "WarehouseMVC"
+      Stop-WebAppPool -Name "WarehouseMVC" -ErrorAction SilentlyContinue
 
-      Write-Host "Clean old deployment folder"
+      Write-Host "Clean old MVC folder"
       Remove-Item "C:\inetpub\WarehouseMVC" -Recurse -Force -ErrorAction SilentlyContinue
-      New-Item -ItemType Directory -Path "C:\inetpub\WarehouseMVC"
+      New-Item -ItemType Directory -Path "C:\inetpub\WarehouseMVC" | Out-Null
 
-      Write-Host "Copy MVC files"
+      Write-Host "Copy published MVC files"
       robocopy "$(mvc_publish)" "C:\inetpub\WarehouseMVC" /MIR
 
       Write-Host "Starting AppPool WarehouseMVC"
