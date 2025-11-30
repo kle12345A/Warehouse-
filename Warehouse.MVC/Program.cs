@@ -42,7 +42,7 @@ namespace Warehouse.MVC
          options.LoginPath = "/Auth";
          options.AccessDeniedPath = "/Home/AccessDenied";
          options.ExpireTimeSpan = TimeSpan.FromMinutes(5); // Cookie h?t h?n sau 5 phút
-         options.SlidingExpiration = false; // Không t? ??ng gia h?n cookie
+         options.SlidingExpiration = false; 
      });
 
 
