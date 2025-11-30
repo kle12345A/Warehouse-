@@ -77,11 +77,16 @@ steps:
       Write-Host "Stopping AppPool WarehouseAPI"
       Stop-WebAppPool -Name "WarehouseAPI"
 
+      Write-Host "Clean old deployment folder"
+      Remove-Item "C:\inetpub\WarehouseAPI" -Recurse -Force -ErrorAction SilentlyContinue
+      New-Item -ItemType Directory -Path "C:\inetpub\WarehouseAPI"
+
       Write-Host "Copy API files"
       robocopy "$(api_publish)" "C:\inetpub\WarehouseAPI" /MIR
 
       Write-Host "Starting AppPool WarehouseAPI"
       Start-WebAppPool -Name "WarehouseAPI"
+
 
 
 # =====================
