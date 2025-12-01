@@ -70,9 +70,11 @@ steps:
     arguments: >
       -c Release
       -o $(mvc_publish)
+      /p:GenerateRuntimeConfigurationFiles=true
       /p:PublishSingleFile=false
       /p:SelfContained=false
-      /p:UseAppHost=false
+      /p:CopyOutputSymbolsToOutputDirectory=false
+    modifyOutputPath: true
     zipAfterPublish: false
 
 # DEPLOY API
