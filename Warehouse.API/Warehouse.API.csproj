@@ -15,10 +15,6 @@
 	</ItemGroup>
 
 	<!-- Không publish file cấu hình của MVC hoặc file trùng -->
-	<ItemGroup>
-		<Content Remove="appsettings.json" />
-		<Content Remove="appsettings.Development.json" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="12.0.1" />
