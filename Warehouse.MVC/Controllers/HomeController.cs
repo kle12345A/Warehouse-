@@ -10,11 +10,11 @@ namespace Warehouse.MVC.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly string _totalExportAmountUrl = "https://localhost:7200/api/Order/total-export-amount-current-month";
-        private readonly string _totalCustomersUrl = "https://localhost:7200/api/Customer/TotalCustomers";
-        private readonly string _totalSuppliersUrl = "https://localhost:7200/api/Supplier/TotalSuppliers";
-        private readonly string _totalStockUrl = "https://localhost:7200/api/Products/TotalProduct";
-        private readonly string _top5product = "https://localhost:7200/api/Order/top-5-export-products";
+        private readonly string _totalExportAmountUrl = "http://localhost:5005/api/Order/total-export-amount-current-month";
+        private readonly string _totalCustomersUrl = "http://localhost:5005/api/Customer/TotalCustomers";
+        private readonly string _totalSuppliersUrl = "http://localhost:5005/api/Supplier/TotalSuppliers";
+        private readonly string _totalStockUrl = "http://localhost:5005/api/Products/TotalProduct";
+        private readonly string _top5product = "http://localhost:5005/api/Order/top-5-export-products";
 
 
 

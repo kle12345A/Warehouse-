@@ -15,14 +15,14 @@ namespace Warehouse.MVC.Controllers
     [Authorize]
     public class ProductController : Controller
     {
-        private string UrlGet = "https://localhost:7200/api/Products";
-        private string UrlCreate = "https://localhost:7200/api/Products";
-        private string UrlCategory = "https://localhost:7200/api/Category";
-        private string UrlDeleteMultiple = "https://localhost:7200/api/Products/DeleteMultiple";
-        private string UrlUpdate = "https://localhost:7200/api/Products";
-        private string UrlReadFile = "https://localhost:7200/api/Products/read-file-product";
-        private string UrlCreate2 = "https://localhost:7200/api/Products/create-product";
-        private string UrlGetId = "https://localhost:7200/api/Category";
+        private string UrlGet = "http://localhost:5005/api/Products";
+        private string UrlCreate = "http://localhost:5005/api/Products";
+        private string UrlCategory = "http://localhost:5005/api/Category";
+        private string UrlDeleteMultiple = "http://localhost:5005/api/Products/DeleteMultiple";
+        private string UrlUpdate = "http://localhost:5005/api/Products";
+        private string UrlReadFile = "http://localhost:5005/api/Products/read-file-product";
+        private string UrlCreate2 = "http://localhost:5005/api/Products/create-product";
+        private string UrlGetId = "http://localhost:5005/api/Category";
 
         public async Task<IActionResult> Index(int page = 1, int pageSize = 5, int? categoryId = null, string search = null)
         {

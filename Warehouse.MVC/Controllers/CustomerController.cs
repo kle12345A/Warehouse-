@@ -11,7 +11,7 @@ namespace Warehouse.MVC.Controllers
 
     public class CustomerController : Controller
     {
-        private readonly string url = "https://localhost:7200/api/Customer";
+        private readonly string url = "http://localhost:5005/api/Customer";
 
         public async Task<IActionResult> Index(int page = 1, int pageSize = 5, string search = null)
         {

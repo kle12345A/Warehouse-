@@ -11,10 +11,10 @@ namespace Warehouse.MVC.Controllers
 
     public class CategoryController : Controller
     {
-        private string UrlGet = "https://localhost:7200/api/Category/WithProductCount";
-        private string UrlGetId = "https://localhost:7200/api/Category";
-        private string UrlCreate = "https://localhost:7200/api/Category";
-        private string UrlUpdate = "https://localhost:7200/api/Category";
+        private string UrlGet = "http://localhost:5005/api/Category/WithProductCount";
+        private string UrlGetId = "http://localhost:5005/api/Category";
+        private string UrlCreate = "http://localhost:5005/api/Category";
+        private string UrlUpdate = "http://localhost:5005/api/Category";
 
         public async Task<IActionResult> Index(int page = 1, int pageSize = 5, string search = null)
         {

@@ -12,8 +12,8 @@ namespace Warehouse.MVC.Controllers
 
     public class UserController : Controller
     {
-        private string UrlGet = "https://localhost:7200/api/User";
-        private string UrlGetRole = "https://localhost:7200/api/Role/GetAllRole";
+        private string UrlGet = "http://localhost:5005/api/User";
+        private string UrlGetRole = "http://localhost:5005/api/Role/GetAllRole";
 
         public async Task<IActionResult> Index(int page = 1, int pageSize = 5, string search = null)
         {

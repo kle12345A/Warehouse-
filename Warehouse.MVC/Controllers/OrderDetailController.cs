@@ -14,9 +14,9 @@ namespace Warehouse.MVC.Controllers
     public class OrderDetailController : Controller
     {
         private readonly PdfService _pdfService;
-        private string Url = "https://localhost:7200/api/OrderDetail";
-        private string UrlOrder = "https://localhost:7200/api/Order";
-        private string UrlOrderC = "https://localhost:7200/api/OrderDetail/Details";
+        private string Url = "http://localhost:5005/api/OrderDetail";
+        private string UrlOrder = "http://localhost:5005/api/Order";
+        private string UrlOrderC = "http://localhost:5005/api/OrderDetail/Details";
         public OrderDetailController(PdfService pdfService) // Inject PdfService
         {
             _pdfService = pdfService;

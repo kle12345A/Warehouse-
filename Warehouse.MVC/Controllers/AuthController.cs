@@ -11,7 +11,7 @@ namespace Warehouse.MVC.Controllers
 {
     public class AuthController : Controller
     {
-        private string UrlLogin = "https://localhost:7200/api/User/Login";
+        private string UrlLogin = "http://localhost:5005/api/User/Login";
         public IActionResult Index()
         {
             return View();

@@ -12,10 +12,10 @@ namespace Warehouse.MVC.Controllers
 
     public class OrderController : Controller
     {
-        private string UrlGet = "https://localhost:7200/api/Order";
-        private string UrlSup = "https://localhost:7200/api/Supplier";
-        private string UrlCus = "https://localhost:7200/api/Customer";
-        private string UrlProduct = "https://localhost:7200/api/Products";
+        private string UrlGet = "http://localhost:5005/api/Order";
+        private string UrlSup = "http://localhost:5005/api/Supplier";
+        private string UrlCus = "http://localhost:5005/api/Customer";
+        private string UrlProduct = "http://localhost:5005/api/Products";
         public async Task<IActionResult> Index(int page = 1, int pageSize = 5, int? status = null, string dateFilter = null, string search = null)
         {
             var orders = await GetOrderAsync();

@@ -11,7 +11,7 @@ namespace Warehouse.MVC.Controllers
 
     public class SupplierController : Controller
     {
-        private string UrlGet = "https://localhost:7200/api/Supplier";
+        private string UrlGet = "http://localhost:5005/api/Supplier";
 
 
         [HttpGet]
