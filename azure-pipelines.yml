@@ -72,7 +72,7 @@ steps:
 
 
 # ===============================
-# 5. DEPLOY API TO IIS
+# 5. DEPLOY API
 # ===============================
 - task: PowerShell@2
   displayName: Deploy API to IIS
@@ -80,18 +80,20 @@ steps:
     targetType: inline
     script: |
       Write-Host "Cleaning API folder"
+
       Remove-Item "C:\inetpub\WarehouseAPI" -Recurse -Force -ErrorAction SilentlyContinue
-      New-Item -ItemType Directory -Path "C:\inetpub\WarehouseAPI" | Out-Null
+      New-Item -ItemType Directory -Path "C:\inetpub\WarehouseAPI" -Force -ErrorAction SilentlyContinue | Out-Null
 
       Write-Host "Copy API files..."
       robocopy "$(api_publish)" "C:\inetpub\WarehouseAPI" /MIR
 
       Write-Host "API deployed successfully!"
-      exit 0   # FIX: Prevent robocopy exit code error
+      exit 0
+
 
 
 # ===============================
-# 6. DEPLOY MVC TO IIS
+# 6. DEPLOY MVC
 # ===============================
 - task: PowerShell@2
   displayName: Deploy MVC to IIS
@@ -99,11 +101,15 @@ steps:
     targetType: inline
     script: |
       Write-Host "Cleaning MVC folder"
+
+      # Xóa toàn bộ nhưng KHÔNG lỗi nếu thư mục chưa xóa hết
       Remove-Item "C:\inetpub\WarehouseMVC" -Recurse -Force -ErrorAction SilentlyContinue
-      New-Item -ItemType Directory -Path "C:\inetpub\WarehouseMVC" | Out-Null
+
+      # Tạo lại folder, nhưng KHÔNG lỗi nếu đã tồn tại
+      New-Item -ItemType Directory -Path "C:\inetpub\WarehouseMVC" -Force -ErrorAction SilentlyContinue | Out-Null
 
       Write-Host "Copy MVC files..."
       robocopy "$(mvc_publish)" "C:\inetpub\WarehouseMVC" /MIR
 
       Write-Host "MVC deployed successfully!"
-      exit 0   # FIX: Prevent robocopy exit code error
+      exit 0   # fix robocopy exit code
