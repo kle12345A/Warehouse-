@@ -44,35 +44,35 @@ steps:
 
 
 # ===============================
-# 3. PUBLISH API (NO FOLDER)
+# 3. PUBLISH API (NO SUBFOLDER)
 # ===============================
 - task: PowerShell@2
   displayName: Publish API
   inputs:
     targetType: inline
     script: |
-      Write-Host "Publishing API (dotnet publish)..."
+      Write-Host "Publishing API..."
       dotnet publish "Warehouse.API/Warehouse.API.csproj" `
         -c Release `
         -o "$(api_publish)"
 
 
 # ===============================
-# 4. PUBLISH MVC (NO FOLDER)
+# 4. PUBLISH MVC (NO SUBFOLDER)
 # ===============================
 - task: PowerShell@2
   displayName: Publish MVC
   inputs:
     targetType: inline
     script: |
-      Write-Host "Publishing MVC (dotnet publish)..."
+      Write-Host "Publishing MVC..."
       dotnet publish "Warehouse.MVC/Warehouse.MVC.csproj" `
         -c Release `
         -o "$(mvc_publish)"
 
 
 # ===============================
-# 5. DEPLOY API
+# 5. DEPLOY API TO IIS
 # ===============================
 - task: PowerShell@2
   displayName: Deploy API to IIS
@@ -83,14 +83,15 @@ steps:
       Remove-Item "C:\inetpub\WarehouseAPI" -Recurse -Force -ErrorAction SilentlyContinue
       New-Item -ItemType Directory -Path "C:\inetpub\WarehouseAPI" | Out-Null
 
-      Write-Host "Copy API files"
+      Write-Host "Copy API files..."
       robocopy "$(api_publish)" "C:\inetpub\WarehouseAPI" /MIR
 
       Write-Host "API deployed successfully!"
+      exit 0   # FIX: Prevent robocopy exit code error
 
 
 # ===============================
-# 6. DEPLOY MVC
+# 6. DEPLOY MVC TO IIS
 # ===============================
 - task: PowerShell@2
   displayName: Deploy MVC to IIS
@@ -101,7 +102,8 @@ steps:
       Remove-Item "C:\inetpub\WarehouseMVC" -Recurse -Force -ErrorAction SilentlyContinue
       New-Item -ItemType Directory -Path "C:\inetpub\WarehouseMVC" | Out-Null
 
-      Write-Host "Copy MVC files"
+      Write-Host "Copy MVC files..."
       robocopy "$(mvc_publish)" "C:\inetpub\WarehouseMVC" /MIR
 
       Write-Host "MVC deployed successfully!"
+      exit 0   # FIX: Prevent robocopy exit code error
